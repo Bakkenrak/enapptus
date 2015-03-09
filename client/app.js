@@ -1,12 +1,17 @@
-var dir = '/enactus/client';
+
 var app = angular.module('enactusApplication', [
-	'ngRoute']);
+	'ngRoute'
+	]);
 
 app.config(['$routeProvider', function($routeProvider){
 	$routeProvider
 		.when('/formconfig', {
-			templateUrl: (dir+ '/features/form_config/form_config.html'), 
-			controller: 'test'
+			templateUrl: ('./client/features/form_config/form_config.html'), 
+			controller: 'testCtrl'
+		})
+		.when('/addUser', {
+			templateUrl: '',
+			controller: ''
 		})
 		.otherwise({
 			redirectTo: '/formconfig'
@@ -15,4 +20,3 @@ app.config(['$routeProvider', function($routeProvider){
 .run(function(){
 	
 });
-angular.bootstrap(document, ['enactusApplication']);

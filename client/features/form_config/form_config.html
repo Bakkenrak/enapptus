@@ -1,1 +1,27 @@
-<p>hallo</p>
+
+<div ng-include="'./client/features/modal/modal.html'"></div>
+<h1 style="margin-top:100px">Formkonfigurator</h1>
+<table class="table col-md-8">
+	<thead>
+		<th><h3>Name</h3></th>
+		<th></th>
+		<th></th>
+	</thead>
+	<tbody>
+		<tr ng-repeat="field in form_fields">
+			<td class="col-md-5"><h3>{{field.title}}</h3></td>
+
+			<td class="col-md-2">			
+				<div class="form-group">
+					<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#updateFieldModal" ng-click="selectField($index)"><span class="glyphicon glyphicon-wrench"></span></button>
+					<button ng-click="deleteFormField(field.id)" class="btn btn-danger btn-lg"><span class="glyphicon glyphicon-trash"></span></button>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="col-md-2"><button class="btn btn-success"><h3>Frage hinzufügen</h3></button></td>
+			<td></td>
+			<td></td>
+		</tr>
+	</tbody>
+</table>
