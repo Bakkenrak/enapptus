@@ -1,7 +1,6 @@
 app.controller('modalCtrl', function($scope, $http, FormField){
-	console.log('test');
-	console.log(FormField);
-	$scope.new_option = {};
+	$scope.type_options = [ 'Radiobutton', 'Dropdown', 'Email', 'Textzeile'];
+	$scope.new_option = '';
 	$scope.save =function(){
 		console.log($scope.selected_field);
 		FormField.save($scope.selected_field)
@@ -11,34 +10,16 @@ app.controller('modalCtrl', function($scope, $http, FormField){
 	}
 
 	$scope.selectOption = function(){
-		switch($scope.selected_type.title.toLowerCase()){
-			case 'textzeile':
-				$scope.selected_field.options = '';
-				console.log('selected textzeile');
-				break;
-			case 'dropdown':
-				break;
-			case 'radiobutton':
-				break;
-			default:
-				console.log('no type selected');
-		}
+		$scope.new_option = '';
+		$scope.selected_field.options = [];
 	}
 	
-	$scope.addOption = function(option_name){
-		console.log(option_name);
-		var value = $scope.new_option[option_name];
-		if(typeof  value !== 'undefined'){
-			$scope.selected_field.options.push(value);
-			$scope.new_option[option_name] = undefined;
-		}else{
-			console.log('no option found');
-		}
-		
+	$scope.addOption = function(){
+		$scope.selected_field.options.push($scope.new_option);
+		$scope.new_option = '';
 	}
 
 	$scope.deleteOption = function(index){
-		console.log(index);
 		if(typeof index === 'undefined'){
 			$scope.selected_field.options = undefined;
 		}else{

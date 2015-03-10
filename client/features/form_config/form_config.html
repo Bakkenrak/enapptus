@@ -8,13 +8,14 @@
 		<th></th>
 	</thead>
 	<tbody>
-		<tr ng-repeat="field in form_fields">
-			<td class="col-md-5"><h3>{{field.title}}</h3></td>
-
-			<td class="col-md-2">			
+		<tr ng-repeat="field in form_fields | orderBy: 'rank'">
+			<td class="col-md-6"><h3>{{field.title}}</h3></td>
+			<td class="col-md-4">			
 				<div class="form-group">
 					<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#updateFieldModal" ng-click="selectField($index)"><span class="glyphicon glyphicon-wrench"></span></button>
 					<button ng-click="deleteFormField(field.id)" class="btn btn-danger btn-lg"><span class="glyphicon glyphicon-trash"></span></button>
+					<button ng-click="moveUp(field)" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-chevron-up"></span></button>
+					<button ng-click="moveDown(field)" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-chevron-down"></span></button>
 				</div>
 			</td>
 		</tr>
