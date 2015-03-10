@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 09, 2015 at 11:42 
+-- Generation Time: Mar 10, 2015 at 01:20 
 -- Server version: 5.6.21
 -- PHP Version: 5.6.3
 
@@ -19,8 +19,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `applications`
 --
-CREATE DATABASE IF NOT EXISTS `applications` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-USE `applications`;
 
 -- --------------------------------------------------------
 
@@ -62,15 +60,20 @@ CREATE TABLE IF NOT EXISTS `fields` (
 `fId` int(11) NOT NULL,
   `type` varchar(50) NOT NULL,
   `title` varchar(255) NOT NULL,
-  `placeholder` varchar(255) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+  `placeholder` varchar(255) NOT NULL,
+  `rank` int(11) NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `fields`
 --
 
-INSERT INTO `fields` (`fId`, `type`, `title`, `placeholder`) VALUES
-(1, 'select', 'Hochschule', 'Uni Munster');
+INSERT INTO `fields` (`fId`, `type`, `title`, `placeholder`, `rank`) VALUES
+(1, 'Textzeile', 'Vorname', 'bitte Vorname eingeben', 0),
+(2, 'Textzeile', 'Vorname', 'bitte Vorname eingeben', 0),
+(3, 'Textzeile', 'Vorname', 'bitte nen Vorname eingeben', 0),
+(4, 'Textzeile', 'Vorname', 'bitte Vorname eingeben', 0),
+(5, 'Textzeile', 'Vorname', 'bitte Vorname eingeben', 0);
 
 -- --------------------------------------------------------
 
@@ -83,14 +86,6 @@ CREATE TABLE IF NOT EXISTS `options` (
   `type` varchar(50) NOT NULL,
   `value` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `options`
---
-
-INSERT INTO `options` (`fId`, `type`, `value`) VALUES
-(1, 'option', 'Uni Muenster'),
-(1, 'FH Muenster', '');
 
 --
 -- Indexes for dumped tables
@@ -133,7 +128,7 @@ MODIFY `aId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 -- AUTO_INCREMENT for table `fields`
 --
 ALTER TABLE `fields`
-MODIFY `fId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
+MODIFY `fId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=6;
 --
 -- Constraints for dumped tables
 --
