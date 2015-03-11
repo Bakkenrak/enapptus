@@ -22,18 +22,24 @@
 		        if ($this->method == 'POST') { //requires JSON data to be POSTed
 		        	
 		        	$inputs = json_decode(file_get_contents('php://input'));
-		        	if(!is_array($inputs)) return Array('error' => "Expecting an array of field objects.");
+		        	if(!is_array($inputs)) 
+		        		return parent::_response(Array('error' => "Expecting an array of field objects."), 403);
 
 		        	$new_ids = array();
 
 					foreach ($inputs as $input) { //expects array of fields
 						
-						//check for 
-						if(!isset($input->fId)) return Array('error' => "Attribute fId is missing");
-						if(!isset($input->title)) return Array('error' => "Attribute title is missing");
-						if(!isset($input->type)) return Array('error' => "Attribute type is missing");
-						if(!isset($input->placeholder)) return Array('error' => "Attribute placeholder is missing");
-						if(!isset($input->rank)) return Array('error' => "Attribute rank is missing");
+						//check for missing properties
+						if(!isset($input->fId)) 
+							return parent::_response(Array('error' => "Attribute fId is missing"), 403);
+						if(!isset($input->title)) 
+							return parent::_response(Array('error' => "Attribute title is missing"), 403);
+						if(!isset($input->type)) 
+							return parent::_response(Array('error' => "Attribute type is missing"), 403);
+						if(!isset($input->placeholder)) 
+							return parent::_response(Array('error' => "Attribute placeholder is missing"), 403);
+						if(!isset($input->rank)) 
+							return parent::_response(Array('error' => "Attribute rank is missing"), 403);
 
 
 						if($input->fId == "" || $input->fId == 0) { //when new field
@@ -66,7 +72,7 @@
 						array_push($new_ids, intval($field->id()));
 					}
 
-		            return json_encode($new_ids); //(new) IDs for update in front-end
+		            return parent::_response($new_ids); //(new) IDs for update in front-end
 		        } 
 		        else {
 		            return "Only accepts POST requests";

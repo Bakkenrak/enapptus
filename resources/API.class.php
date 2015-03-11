@@ -77,12 +77,12 @@ abstract class API
 
     public function processAPI() {
         if ((int)method_exists($this, $this->endpoint) > 0) {
-            return $this->_response($this->{$this->endpoint}($this->args));
+            return $this->{$this->endpoint}($this->args);
         }
         return $this->_response("No Endpoint: $this->endpoint", 404);
     }
 
-    public function _response($data, $status = 200) {
+    protected function _response($data, $status = 200) {
         header("HTTP/1.1 " . $status . " " . $this->_requestStatus($status));
         return json_encode($data);
     }
@@ -102,7 +102,8 @@ abstract class API
     private function _requestStatus($code) {
         $status = array(  
             200 => 'OK',
-            404 => 'Not Found',   
+            404 => 'Not Found',
+            403 => 'Forbidden',   
             405 => 'Method Not Allowed',
             500 => 'Internal Server Error',
         ); 
