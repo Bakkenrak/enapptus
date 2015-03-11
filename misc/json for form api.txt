@@ -1,0 +1,41 @@
+[
+    {
+        "fId": 1,
+        "title": "Vorname",
+        "placeholder": "bitte Vornamen eingeben",
+        "type": "Textzeile",
+        "rank": 0
+    },
+    {
+        "fId": 0, <------------------0, wenn neu
+        "title": "Hochschule",
+        "placeholder": "",
+        "type": "Dropdown",
+        "options": [
+            {
+                "fId": 0, <----------optional, wird vom Server mit ausgegeben, muss zum Speichern aber nicht an den Server geschickt werden
+                "type": "option",
+                "value": "WWU"
+            },
+            {
+                "fId": 0,
+                "type": "option",
+                "value": "FH"
+            }
+        ],
+        "rank": 1
+    },
+    {
+        "fId": 3,
+        "title": "Lieblingsclub",
+        "placeholder": "Schalke 04",  <---------------placeholder = preselected value bei Radio, Dropdown etc?
+        "type": "Radio",
+        "options": [
+            {
+                "type": "option",
+                "value": "Schalke 04"
+            }
+        ],
+        "rank": 2
+    }
+]
