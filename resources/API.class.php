@@ -102,6 +102,7 @@ abstract class API
     private function _requestStatus($code) {
         $status = array(  
             200 => 'OK',
+            400 => 'Bad Request',
             404 => 'Not Found',
             403 => 'Forbidden',   
             405 => 'Method Not Allowed',

@@ -23,7 +23,7 @@
 		        	
 		        	$inputs = json_decode(file_get_contents('php://input'));
 		        	if(!is_array($inputs)) 
-		        		return parent::_response(Array('error' => "Expecting an array of field objects."), 403);
+		        		return parent::_response(Array('error' => "Expecting an array of field objects."), 400);
 
 		        	$new_ids = array();
 
@@ -31,22 +31,24 @@
 						
 						//check for missing properties
 						if(!isset($input->fId)) 
-							return parent::_response(Array('error' => "Attribute fId is missing"), 403);
+							return parent::_response(Array('error' => "Attribute fId is missing"), 400);
 						if(!isset($input->title)) 
-							return parent::_response(Array('error' => "Attribute title is missing"), 403);
+							return parent::_response(Array('error' => "Attribute title is missing"), 400);
 						if(!isset($input->type)) 
-							return parent::_response(Array('error' => "Attribute type is missing"), 403);
+							return parent::_response(Array('error' => "Attribute type is missing"), 400);
 						if(!isset($input->placeholder)) 
-							return parent::_response(Array('error' => "Attribute placeholder is missing"), 403);
+							return parent::_response(Array('error' => "Attribute placeholder is missing"), 400);
 						if(!isset($input->rank)) 
-							return parent::_response(Array('error' => "Attribute rank is missing"), 403);
+							return parent::_response(Array('error' => "Attribute rank is missing"), 400);
 
 
 						if($input->fId == "" || $input->fId == 0) { //when new field
-							$field = ORM::for_table('fields')->create(); //create object
+							$field = ORM::for_table('field')->create(); //create new object
 						}
 						else {
-							$field = ORM::for_table('fields')->use_id_column('fId')->where('fId',$input->fId)->find_one(); //retrieve by id
+							$field = ORM::for_table('field')->use_id_column('fId')->where('fId',$input->fId)->find_one(); //retrieve by id
+							if(!$field) //when no field with this id in db
+								$field = ORM::for_table('field')->create(); //create new object
 						}
 						//update fields
 						$field->title = $input->title;
@@ -56,11 +58,11 @@
 						$field->save();
 
 						//remove old options
-						ORM::for_table('options')->where('fId', $field->id())->delete_many();
+						ORM::for_table('option')->where('fId', $field->id())->delete_many();
 
 						if(isset($input->options)) { //if options available
 							foreach ($input->options as $option) {
-								$o = ORM::for_table('options')->create();
+								$o = ORM::for_table('option')->create();
 								$o->fId = $field->id(); //retrieve Id of possibly new field via id()
 								$o->type = $option->type;
 								$o->value = $option->value;
@@ -75,7 +77,7 @@
 		            return parent::_response($new_ids); //(new) IDs for update in front-end
 		        } 
 		        else {
-		            return "Only accepts POST requests";
+		            return parent::_response(Array('error' => "Only accepts POST requests"), 403);
 		        }
 
 		    }
@@ -83,17 +85,17 @@
 
 		    	if ($this->method == 'GET') { //returns form data on GET requests
 		        	
-		        	$fields = ORM::for_table('fields')->find_array();
+		        	$fields = ORM::for_table('field')->find_array();
 
 					$i = 0;
 					foreach ($fields as $idx => $field) {
-						$fields[$idx]['options'] = ORM::for_table('options')->where('fId', $field['fId'])->find_array();
+						$fields[$idx]['option'] = ORM::for_table('option')->where('fId', $field['fId'])->find_array();
 					}
 
-		            return json_encode($fields); //form fields array as JSON object
+		            return parent::_response($fields); //form fields array as JSON object
 		        } 
 		        else {
-		            return "Only accepts GET requests";
+		            return parent::_response(Array('error' => "Only accepts GET requests"), 403);
 		        }
 
 		    }
