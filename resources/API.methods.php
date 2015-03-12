@@ -23,7 +23,7 @@
 		        if ($this->method == 'POST') { //requires JSON data to be POSTed
 
 		        	return $this->saveFormFields();
-		        	
+
 		        } 
 		        else {
 
@@ -181,7 +181,7 @@
 			if(!$member) //when no member with this id in db
 				return parent::_response(Array('error' => 'Member not found'), 403);
 
-			return parent::_response(json_encode($member->as_array()));
+			return parent::_response($member->as_array());
 		}
 
 		private function deleteMember(){
