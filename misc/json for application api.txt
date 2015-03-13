@@ -1,0 +1,13 @@
+{
+    "aId": 1, // 0, wenn neu
+    "answers": [
+        {
+            "fId": 33,
+            "value": "jooooooooo"
+        },
+        {
+            "fId": 39,
+            "value": "neeeeeee"
+        }
+    ]
+}

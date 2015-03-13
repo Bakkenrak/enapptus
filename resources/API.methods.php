@@ -22,7 +22,7 @@
 
 		        if ($this->method == 'POST') { //requires JSON data to be POSTed
 
-		        	return $this->saveFormFields();
+		        	return $this->saveFormField();
 
 		        } 
 		        else {
@@ -64,7 +64,7 @@
 
 				}
 
-			} elseif(isset($this->args[0]) && is_numeric($this->args[0])) { // call to api/member/{number}
+			} elseif(isset($this->args[0]) && is_numeric($this->args[0])) { // call to api/member/{id}
 
 				if($this->method == 'GET') { //return member with given id
 
@@ -96,6 +96,117 @@
 		}
 
 
+		/**
+		*	Holds functionality regarding application administration
+		*	Calls to api/member
+		*/
+		protected function application() {
+			if($this->verb == 'save') { //call to api/application/save
+
+				if($this->method == 'POST') {
+
+					return $this->saveApplication();
+
+				} else {
+
+					return parent::_response(Array('error' => "Only accepts POST requests"), 403);
+
+				}
+
+			} elseif(isset($this->args[0]) && is_numeric($this->args[0])) { // call to api/application/{id}
+
+				if($this->method == 'GET') { //return member with given id
+
+					return $this->getApplication();
+
+				} elseif($this->method == 'DELETE') { //delete application with given id
+
+					return $this->deleteApplication();
+
+				} else { // wrong method
+
+					return parent::_response(Array('error' => 'Only accepts GET or DELETE requests.'), 403);
+
+				}
+
+			} else { //call to any other domain: api/member/*
+				if ($this->method == 'GET') { // return all applications
+		        	
+					return $this->getApplications();
+
+		        } 
+		        else {
+
+		            return parent::_response(Array('error' => "Only accepts GET requests"), 403);
+
+		        }
+
+			}
+		}
+
+
+		/**
+		*	Holds functionality regarding vote administration
+		*	Calls to api/member
+		*/
+		protected function vote() {
+			if($this->verb == 'save') { //call to api/vote/save
+
+				if($this->method == 'POST') {
+
+					return $this->saveVote();
+
+				} else {
+
+					return parent::_response(Array('error' => "Only accepts POST requests"), 403);
+
+				}
+
+			} elseif(isset($this->args[0]) && is_numeric($this->args[0])) { // call to api/vote/{mid}
+
+				if($this->method == 'GET') { //return votes for member
+
+					return $this->getVotesByMember();
+
+				} else { // wrong method
+
+					return parent::_response(Array('error' => 'Only accepts GET requests.'), 403);
+
+				}
+
+			} elseif(isset($this->args[0]) && is_numeric($this->args[0]) && isset($this->args[1]) && is_numeric($this->args[1])) { // call to api/vote/{mid}/{aId}
+
+				if($this->method == 'GET') { //return vote for given ids
+
+					return $this->getVote();
+
+				} elseif($this->method == 'DELETE') { //delete vote for given ids
+
+					return $this->deleteVote();
+
+				} else { // wrong method
+
+					return parent::_response(Array('error' => 'Only accepts GET or DELETE requests.'), 403);
+
+				}
+
+			} else { //call to any other domain: api/vote/*
+				if ($this->method == 'GET') { // return all votes
+		        	
+					return $this->getVotes();
+
+		        } 
+		        else {
+
+		            return parent::_response(Array('error' => "Only accepts GET requests"), 403);
+
+		        }
+
+			}
+		}
+
+
+
 
 	// LOGIC ----------------------------------------------------------------
 
@@ -111,63 +222,54 @@
             return parent::_response($fields); //form fields array as JSON object
 		}
 
-		private function saveFormFields(){
-			$inputs = json_decode($this->file); //decode input JSON
-
-        	if(!is_array($inputs)) //if input is no array
-        		return parent::_response(Array('error' => "Expecting an array of field objects."), 400);
-
-			foreach ($inputs as $idx => $input) { //expects array of fields
-				
-				//check for missing properties
-				if(!isset($input->fId)) 
-					return parent::_response(Array('error' => "Attribute fId is missing"), 400);
-				if(!isset($input->title)) 
-					return parent::_response(Array('error' => "Attribute title is missing"), 400);
-				if(!isset($input->type)) 
-					return parent::_response(Array('error' => "Attribute type is missing"), 400);
-				if(!isset($input->placeholder)) 
-					return parent::_response(Array('error' => "Attribute placeholder is missing"), 400);
-				if(!isset($input->rank)) 
-					return parent::_response(Array('error' => "Attribute rank is missing"), 400);
+		private function saveFormField(){
+			$input = json_decode($this->file); //decode input JSON
+			
+			//check for missing properties
+			if(!isset($input->fId)) 
+				return parent::_response(Array('error' => "Attribute fId is missing"), 400);
+			if(!isset($input->title)) 
+				return parent::_response(Array('error' => "Attribute title is missing"), 400);
+			if(!isset($input->type)) 
+				return parent::_response(Array('error' => "Attribute type is missing"), 400);
+			if(!isset($input->placeholder)) 
+				return parent::_response(Array('error' => "Attribute placeholder is missing"), 400);
+			if(!isset($input->rank)) 
+				return parent::_response(Array('error' => "Attribute rank is missing"), 400);
 
 
-				if($input->fId == "" || $input->fId == 0) { //when new field
-					$field = ORM::for_table('field')->create(); //create new object
+			$field = ORM::for_table('field')->use_id_column('fId')->where('fId', $input->fId)->find_one(); //retrieve by id
+			if(!$field) //when new field
+				$field = ORM::for_table('field')->create(); //create new object
+	
+			//update fields
+			$field->title = $input->title;
+			$field->type = $input->type;
+			$field->placeholder = $input->placeholder;
+			$field->rank = $input->rank;
+			$field->save();
+
+			//remove old options
+			ORM::for_table('option')->where('fId', $field->id())->delete_many();
+
+			if(isset($input->options)) { //if options available
+				foreach ($input->options as $option) {
+					$o = ORM::for_table('option')->create();
+					$o->fId = $field->id(); //retrieve Id of possibly new field via id()
+					$o->type = $option->type;
+					$o->value = $option->value;
+					$o->save();
 				}
-				else {
-					$field = ORM::for_table('field')->use_id_column('fId')->where('fId',$input->fId)->find_one(); //retrieve by id
-					if(!$field) //when no field with this id in db
-						$field = ORM::for_table('field')->create(); //create new object
-				}
-				//update fields
-				$field->title = $input->title;
-				$field->type = $input->type;
-				$field->placeholder = $input->placeholder;
-				$field->rank = $input->rank;
-				$field->save();
-
-				//remove old options
-				ORM::for_table('option')->where('fId', $field->id())->delete_many();
-
-				if(isset($input->options)) { //if options available
-					foreach ($input->options as $option) {
-						$o = ORM::for_table('option')->create();
-						$o->fId = $field->id(); //retrieve Id of possibly new field via id()
-						$o->type = $option->type;
-						$o->value = $option->value;
-						$o->save();
-					}
-				}
-
-				$inputs[$idx]->fId = $field->id(); //set (possibly) updated fId
 			}
 
-            return parent::_response($inputs);
+			$input->fId = $field->id(); //set (possibly) updated fId
+		
+
+            return parent::_response($input);
 		}
 
 
-		// Members ---------------------------------------------------------------
+	// Members ---------------------------------------------------------------
 
 		private function getMembers() {
 			//fetch all, without password
@@ -232,5 +334,104 @@
 			unset($output['password']); //remove id field as it should not be given out from the server
 			return parent::_response($output);
 		}
+
+
+	// Applications --------------------------------------------------------
+
+		private function getApplication(){
+			$application = ORM::for_table('application')->where('aId', $this->args[0])->find_one();
+
+			if(!$application)
+				return parent::_response(Array('error' => 'Application not found'), 403);
+
+			$application->answers = ORM::for_table('answer')->where('aId', $this->args[0])->find_array();
+
+			return parent::_response($application->as_array());
+		}
+
+		private function getApplications(){
+			$applications = ORM::for_table('application')->find_array();
+
+			foreach ($applications as $idx => $application) {
+				$applications[$idx]['answers'] = ORM::for_table('answer')->where('aId', $application['aId'])->find_array();
+			}
+
+			return parent::_response($applications);
+		}
+
+		private function saveApplication(){
+			$input = json_decode($this->file); //decode input json
+
+			if(!isset($input->aId))
+				return parent::_response(Array('error' => "Attribute aId is missing."), 400);
+
+			if(!is_array($input->answers)) //if input is no array
+        		return parent::_response(Array('error' => "Expecting an array attribute 'answers' with answer objects."), 400);
+
+        	$application = ORM::for_table('application')->use_id_column('aId')->find_one($input->aId); //try to find by id
+        	if(!$application) { //when not found in db
+				$application = ORM::for_table('application')->use_id_column('aId')->create(); //create new
+				$application->save(); //persist, all values are automatically filled in db
+			}
+			
+			$aId = $application->id(); //get Id of new application
+
+			ORM::for_table('answer')->where('aId', $aId)->delete_many(); //delete all previous answers
+
+			//iterate answer objects and persist in db
+			foreach ($input->answers as $answer) {
+				if(isset($answer->fId) && isset($answer->value)) { //when all information provided
+					$a = ORM::for_table('answer')->create();
+					$a->aId = $aId;
+					$a->fId = $answer->fId;
+					$a->value = $answer->value;
+					$a->save();
+				}
+			}
+
+			return parent::_response($aId); //return ID of newly created application
+		}
+
+		private function deleteApplication() {
+			$application = ORM::for_table('application')->use_id_column('aId')->find_one($this->args[0]);
+
+			if(!$application) //when no application with this id in db
+				return parent::_response(Array('error' => 'Application not found'), 403);
+
+			$id = $application->aId;
+			$application->delete();
+			return parent::_response(Array('information' => 'Application with ID ' . $id . ' was deleted.'));
+		}
+
+	// Votes --------------------------------------------------------
+
+		private function saveVote() {
+			$input = json_decode($this->file); //decode input json
+
+			//check for missing properties
+			if(!isset($input->mId)) 
+				return parent::_response(Array('error' => "Attribute mId is missing"), 400);
+			if(!isset($input->aId)) 
+				return parent::_response(Array('error' => "Attribute aId is missing"), 400);
+			if(!isset($input->value)) 
+				return parent::_response(Array('error' => "Attribute value is missing"), 400);
+
+			if(!ORM::for_table('member')->where('mId', $input->mId)->find_one())
+				return parent::_response(Array('error' => 'Member not found'), 403);
+			if(!ORM::for_table('application')->where('aId', $input->aId)->find_one())
+				return parent::_response(Array('error' => 'Application not found'), 403);
+
+			$vote = ORM::for_table('vote')->where(Array('mId' => $input->mId, 'aId' => $input->aId))->find_one();
+			if(!$vote) {
+				$vote = ORM::for_table('vote')->create();
+				$vote->mId = $input->mId;
+				$vote->aId = $input->aId;
+			}
+			$vote->value = $input->value;
+			$vote->save();
+
+			return parent::_response($vote->as_array());
+		}
+
 	}
 ?>
