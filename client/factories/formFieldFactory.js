@@ -1,4 +1,4 @@
-app.factory('FormField', function($http){
+app.factory('apiFactory', function($http){
 	return {
 		save : function(data){
 			return $http({
@@ -15,6 +15,20 @@ app.factory('FormField', function($http){
 				data: data,
 				headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
 			});
-		}
+		}, 
+		index : function(){
+			return $http({
+				method:'GET',
+				url: './api/form',
+				headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
+			});
+		},
+		deleteElement : function(field){
+			return $http({
+				method:'DELETE',
+				url: './api/form/'+field.fId,
+				headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
+			});
+		},
 	}
 });

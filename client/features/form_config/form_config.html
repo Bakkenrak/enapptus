@@ -1,23 +1,29 @@
+<style>
+	.clickable:hover{
+		cursor:pointer;
+	}
+</style>
+
 <h1 style="margin-top:100px">Formkonfigurator</h1>
 <div class="col-md-6">
-<table class="table">
+<table class="table table-hover">
 	<thead>
 		<th class="col-md-4">Name</th>
 		<th class="col-md-8"></th>
 	</thead>
 	<tbody>
-		<tr ng-repeat="field in form_fields | orderBy: 'rank'" ng-click="selectField(field)">
-			<td class="col-md-6"><h3>{{field.title}}</h3></td>
+		<tr class="clickable" ng-class="{'active':field.fId === selected_field.fId}" ng-repeat="field in form_fields | orderBy: 'rank'" ng-click="selectField(field)">
+			<td class="col-md-6"><h4>{{field.title}}</h4></td>
 			<td class="col-md-4">			
 				<div class="form-group">
-					<button ng-click="deleteFormField(field.id)" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button>
+					<button ng-click="deleteFormField(field)" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button>
 					<button ng-click="moveUp(field)" class="btn btn-default"><span class="glyphicon glyphicon-chevron-up"></span></button>
 					<button ng-click="moveDown(field)" class="btn btn-default"><span class="glyphicon glyphicon-chevron-down"></span></button>
 				</div>
 			</td>
 		</tr>
 		<tr>
-			<td class="col-md-2"><button class="btn btn-success"><h3>Frage hinzufügen</h3></button></td>
+			<td class="col-md-2"><button class="btn btn-success" ng-click="newField()"><h3>Frage hinzufügen</h3></button></td>
 			<td></td>
 			<td></td>
 		</tr>
@@ -45,9 +51,45 @@
 				<td><input type="text" ng-model="selected_field.placeholder"></td>
 			</tr>
 			<tr>
-				<td><button class="btn btn-success" ng-click="saveField(selected_field)">Speichern</button></td>
+				<td>Ranking</td>
+				<td>{{selected_field.rank}}</td>
+			</tr>
+			<tr>
+				<td><button class="btn btn-success" ng-click="saveExistingField(selected_field)">Speichern</button></td>
 			</tr>
 
 		</tbody>
 		</table>
+</div>
+<div class="col-md-6" ng-show="new_field !== undefined">
+	<h4>Neues Feld</h4>
+	<form class="form" name="new_field_form">
+		<table class="table col-md-6">
+			<thead>
+				<th></th>
+				<th></th>
+			</thead>
+			<tbody>
+				<tr>
+					<td>Beschriftung</td>
+					<td><input type="text" class="form-control" ng-model="new_field.title" required></td>
+				</tr>
+				<tr>
+					<td>Feldtyp</td>
+					<td><select ng-options="type for type in type_options" class="form-control" ng-model="new_field.type" required></select></td>
+				</tr>
+				<tr>
+					<td>Platzhalter</td>
+					<td><input type="text" class="form-control" ng-model="new_field.placeholder" required></td>
+				</tr>
+				<tr>
+					<td>Position</td>
+					<td><input type="range" min="0" max="{{form_fields.length}}" step="1" ng-model="new_field.rank" required>{{new_field.rank}}</td>
+				</tr>
+				<tr>
+					<td><button ng-disabled="new_field_form.$invalid" class="btn btn-success" ng-click="saveNewField(new_field)">Speichern</button></td>
+				</tr>
+			</tbody>
+		</table>
+	</form>
 </div>

@@ -1,51 +1,90 @@
-app.controller('testCtrl', function($scope, FormField){
+app.controller('testCtrl', function($scope, apiFactory, $q, index){
 	$scope.type_options = [ 'Textzeile'];
 	$scope.selected_field = {};
-
-	$scope.form_fields = [
-		{
-			fId: '1',
-			title:'Vorname' ,
-			placeholder: 'bitte Vorname eingeben',
-			type: 'Textzeile',
-			rank: 1
-		},
-		{
-			fId: '2',
-			title:'Alter' ,
-			placeholder: 'bitte Alter angeben',
-			type: 'Radiobutton',
-			options : ['asda', 'asdasd'],
-			rank: 0
-		},
-		{
-			fId: '3',
-			title:'Welche Hochschule' ,
-			placeholder: ['WWU', 'FH'],
-			type: 'Dropdown',
-			options : ['sdfdsf', 'asdsdfasd'],
-			rank: 2
-		}
-	];
+	angular.forEach(index.data, function(elm){
+		elm.rank = Number(elm.rank);
+	});
+	$scope.form_fields = index.data; 
 	$scope.selectField = function(field){
-		console.log(field);
+		$scope.new_field = undefined;
 		$scope.selected_field = angular.copy(field);
 	}
 
-	$scope.saveField = function(field){
-		FormField.save(field).success(function(data){
+	$scope.saveExistingField = function(field){
+		apiFactory.save(field).success(function(data){
 			console.log(data);
 		});
 	}
-
-
-	$scope.deleteFormField = function(form_id){
-
+	$scope.deleteFormField = function(field){
+		apiFactory.deleteElement(field).success(function(data, status){
+			if(status === 200){
+				reloadAll();
+			}else{
+				console.log('error when deleting element');
+			}
+		})
 	};
 
-	$scope.new_field = function(){
+	$scope.newField = function(){
 		$scope.selected_field = {};
+		$scope.new_field = {
+			rank: $scope.form_fields.length
+		};
 	}
+
+	$scope.saveNewField = function(field){
+		var promises = [];
+		field.fId = '0';
+		field.rank = Number(field.rank);
+		var user_selected_rank = field.rank;
+		if(user_selected_rank === $scope.form_fields.length){
+			apiFactory.save(field).success(
+				function(data, status){
+					if(status === 200){
+						$scope.form_fields.push(data);
+					}else{
+						console.log(data);
+					}
+			});
+		}else{
+			angular.forEach($scope.form_fields, function(elm){
+				if(elm.rank>=user_selected_rank){
+					elm.rank++;
+					promises.push(apiFactory.save(elm));
+				}
+			});
+			$q.all(promises).then(function(result){
+				apiFactory.save(field).success(
+				function(data, status){
+					if(status===200){ 
+					console.log('200', 'reload');
+					reloadAll();
+					}else{
+						console.log('err when save field', data);
+					}
+				});
+			}, function(err){
+				console.log('err when saving other fields', err);
+			});
+ 
+		}
+	};
+
+	var reloadAll = function(){
+		apiFactory.index().success(function(res, status){
+			if(status === 200){
+				console.log(res);
+				angular.forEach(index.data, function(elm){
+					elm.rank = Number(elm.rank);
+				});
+				$scope.form_fields = res;
+			}else{
+				console.log('err when reloading', res);
+			}
+
+		});
+	}
+
 
 	$scope.moveDown = function(field){
 		field.rank++;
