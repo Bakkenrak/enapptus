@@ -128,7 +128,6 @@
 					return parent::_response(Array('error' => 'Only accepts GET or DELETE requests.'), 403);
 
 				}
-
 			} else { //call to any other domain: api/member/*
 				if ($this->method == 'GET') { // return all applications
 		        	
@@ -162,18 +161,6 @@
 
 				}
 
-			} elseif(isset($this->args[0]) && is_numeric($this->args[0])) { // call to api/vote/{mid}
-
-				if($this->method == 'GET') { //return votes for member
-
-					return $this->getVotesByMember();
-
-				} else { // wrong method
-
-					return parent::_response(Array('error' => 'Only accepts GET requests.'), 403);
-
-				}
-
 			} elseif(isset($this->args[0]) && is_numeric($this->args[0]) && isset($this->args[1]) && is_numeric($this->args[1])) { // call to api/vote/{mid}/{aId}
 
 				if($this->method == 'GET') { //return vote for given ids
@@ -187,6 +174,18 @@
 				} else { // wrong method
 
 					return parent::_response(Array('error' => 'Only accepts GET or DELETE requests.'), 403);
+
+				}
+
+			} elseif(isset($this->args[0]) && is_numeric($this->args[0])) { // call to api/vote/{mid}
+
+				if($this->method == 'GET') { //return votes for member
+
+					return $this->getVotesByMember();
+
+				} else { // wrong method
+
+					return parent::_response(Array('error' => 'Only accepts GET requests.'), 403);
 
 				}
 
@@ -254,6 +253,12 @@
 
 			if(isset($input->options)) { //if options available
 				foreach ($input->options as $option) {
+					//check for missing properties
+					if(!isset($option->type)) 
+						return parent::_response(Array('error' => "Attribute type is missing in option"), 400);
+					if(!isset($option->value)) 
+						return parent::_response(Array('error' => "Attribute value is missing in option"), 400);
+
 					$o = ORM::for_table('option')->create();
 					$o->fId = $field->id(); //retrieve Id of possibly new field via id()
 					$o->type = $option->type;
@@ -405,6 +410,26 @@
 
 	// Votes --------------------------------------------------------
 
+		private function getVote(){
+			$vote = ORM::for_table('vote')->where(Array('mId' => $this->args[0], 'aId' => $this->args[1]))->find_one();
+			if(!$vote)
+				return parent::_response(Array('error' => 'Vote not found'), 403);
+
+			return parent::_response($vote->as_array());
+		}
+
+		private function getVotesByMember() {
+			$votes = ORM::for_table('vote')->where('mId', $this->args[0])->find_array();
+
+			return parent::_response($votes);
+		}
+
+		private function getVotes(){
+			$votes = ORM::for_table('vote')->find_array();
+
+			return parent::_response($votes);
+		}
+
 		private function saveVote() {
 			$input = json_decode($this->file); //decode input json
 
@@ -421,17 +446,15 @@
 			if(!ORM::for_table('application')->where('aId', $input->aId)->find_one())
 				return parent::_response(Array('error' => 'Application not found'), 403);
 
-			$vote = ORM::for_table('vote')->where(Array('mId' => $input->mId, 'aId' => $input->aId))->find_one();
-			if(!$vote) {
-				$vote = ORM::for_table('vote')->create();
-				$vote->mId = $input->mId;
-				$vote->aId = $input->aId;
-			}
+			ORM::for_table('vote')->where(Array('mId' => $input->mId, 'aId' => $input->aId))->delete_many();
+
+			$vote = ORM::for_table('vote')->create();
+			$vote->mId = $input->mId;
+			$vote->aId = $input->aId;
 			$vote->value = $input->value;
 			$vote->save();
 
 			return parent::_response($vote->as_array());
 		}
-
 	}
 ?>
