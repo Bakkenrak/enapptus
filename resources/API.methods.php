@@ -307,7 +307,7 @@
 		}
 
 		private function deleteFormField(){
-			$field = ORM::for_table('field')->where('fId', $this->args[0])->find_one();
+			$field = ORM::for_table('field')->use_id_column('fId')->where('fId', $this->args[0])->find_one();
 
 			if(!$field) //when no field with this id in db
 				return parent::_response(Array('error' => 'Field not found'), 403);
