@@ -31,8 +31,23 @@
 
 		        }
 
-		    }
-		    else{ //call to other URI than save: /form/*
+		    } elseif(isset($this->args[0]) && is_numeric($this->args[0])) { // call to api/form/{id}
+
+				if($this->method == 'GET') { //return member with given id
+
+					return $this->getFormField();
+
+				} elseif($this->method == 'DELETE') { //delete member with given id
+
+					return $this->deleteFormField();
+
+				} else { // wrong method
+
+					return parent::_response(Array('error' => 'Only accepts GET or DELETE requests.'), 403);
+
+				}
+
+			} else{ //call to other URI than save: /form/*
 
 		    	if ($this->method == 'GET') { //returns form data on GET requests
 
@@ -205,6 +220,67 @@
 		}
 
 
+		/**
+		*	Holds functionality regarding vote administration
+		*	Calls to api/member
+		*/
+		protected function question() {
+			if($this->verb == 'save') { //call to api/vote/save
+
+				if($this->method == 'POST') {
+
+					return $this->saveQuestion();
+
+				} else {
+
+					return parent::_response(Array('error' => "Only accepts POST requests"), 403);
+
+				}
+
+			} elseif(isset($this->args[0]) && is_numeric($this->args[0]) && isset($this->args[1]) && is_numeric($this->args[1])) { // call to api/vote/{mid}/{aId}
+
+				if($this->method == 'GET') { //return vote for given ids
+
+					return $this->getQuestion();
+
+				} elseif($this->method == 'DELETE') { //delete vote for given ids
+
+					return $this->deleteQuestion();
+
+				} else { // wrong method
+
+					return parent::_response(Array('error' => 'Only accepts GET or DELETE requests.'), 403);
+
+				}
+
+			} elseif(isset($this->args[0]) && is_numeric($this->args[0])) { // call to api/vote/{aid}
+
+				if($this->method == 'GET') { //return votes for member
+
+					return $this->getQuestionsByApplication();
+
+				} else { // wrong method
+
+					return parent::_response(Array('error' => 'Only accepts GET requests.'), 403);
+
+				}
+
+			} else { //call to any other domain: api/vote/*
+				if ($this->method == 'GET') { // return all votes
+		        	
+					return $this->getQuestions();
+
+		        } 
+		        else {
+
+		            return parent::_response(Array('error' => "Only accepts GET requests"), 403);
+
+		        }
+
+			}
+		}
+
+
 
 
 	// LOGIC ----------------------------------------------------------------
@@ -219,6 +295,26 @@
 			}
 
             return parent::_response($fields); //form fields array as JSON object
+		}
+
+		private function getFormField(){
+			$field = ORM::for_table('field')->where('fId', $this->args[0])->find_one();
+
+			if(!$field) //when no field with this id in db
+				return parent::_response(Array('error' => 'Field not found'), 403);
+
+			return parent::_response($field->as_array());
+		}
+
+		private function deleteFormField(){
+			$field = ORM::for_table('field')->where('fId', $this->args[0])->find_one();
+
+			if(!$field) //when no field with this id in db
+				return parent::_response(Array('error' => 'Field not found'), 403);
+
+			$id = $field->fId;
+			$field->delete();
+			return parent::_response(Array('information' => 'Field with ID ' . $id . ' was deleted.'));
 		}
 
 		private function saveFormField(){
@@ -455,6 +551,55 @@
 			$vote->save();
 
 			return parent::_response($vote->as_array());
+		}
+
+	// Questions --------------------------------------------------------
+
+		private function getQuestion(){
+			$question = ORM::for_table('question')->where(Array('mId' => $this->args[0], 'aId' => $this->args[1]))->find_one();
+			if(!$question)
+				return parent::_response(Array('error' => 'question not found'), 403);
+
+			return parent::_response($question->as_array());
+		}
+
+		private function getQuestionsByApplication() {
+			$questions = ORM::for_table('question')->where('aId', $this->args[0])->find_array();
+
+			return parent::_response($questions);
+		}
+
+		private function getQuestions(){
+			$questions = ORM::for_table('question')->find_array();
+
+			return parent::_response($questions);
+		}
+
+		private function saveQuestion() {
+			$input = json_decode($this->file); //decode input json
+
+			//check for missing properties
+			if(!isset($input->mId)) 
+				return parent::_response(Array('error' => "Attribute mId is missing"), 400);
+			if(!isset($input->aId)) 
+				return parent::_response(Array('error' => "Attribute aId is missing"), 400);
+			if(!isset($input->value)) 
+				return parent::_response(Array('error' => "Attribute value is missing"), 400);
+
+			if(!ORM::for_table('member')->where('mId', $input->mId)->find_one())
+				return parent::_response(Array('error' => 'Member not found'), 403);
+			if(!ORM::for_table('application')->where('aId', $input->aId)->find_one())
+				return parent::_response(Array('error' => 'Application not found'), 403);
+
+			ORM::for_table('question')->where(Array('mId' => $input->mId, 'aId' => $input->aId))->delete_many();
+
+			$question = ORM::for_table('question')->create();
+			$question->mId = $input->mId;
+			$question->aId = $input->aId;
+			$question->value = $input->value;
+			$question->save();
+
+			return parent::_response($question->as_array());
 		}
 	}
 ?>
