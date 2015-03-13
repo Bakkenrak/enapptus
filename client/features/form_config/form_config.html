@@ -1,21 +1,18 @@
-
-<div ng-include="'./client/features/modal/modal.html'"></div>
 <h1 style="margin-top:100px">Formkonfigurator</h1>
-<table class="table col-md-8">
+<div class="col-md-6">
+<table class="table">
 	<thead>
-		<th><h3>Name</h3></th>
-		<th></th>
-		<th></th>
+		<th class="col-md-4">Name</th>
+		<th class="col-md-8"></th>
 	</thead>
 	<tbody>
-		<tr ng-repeat="field in form_fields | orderBy: 'rank'">
+		<tr ng-repeat="field in form_fields | orderBy: 'rank'" ng-click="selectField(field)">
 			<td class="col-md-6"><h3>{{field.title}}</h3></td>
 			<td class="col-md-4">			
 				<div class="form-group">
-					<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#updateFieldModal" ng-click="selectField($index)"><span class="glyphicon glyphicon-wrench"></span></button>
-					<button ng-click="deleteFormField(field.id)" class="btn btn-danger btn-lg"><span class="glyphicon glyphicon-trash"></span></button>
-					<button ng-click="moveUp(field)" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-chevron-up"></span></button>
-					<button ng-click="moveDown(field)" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-chevron-down"></span></button>
+					<button ng-click="deleteFormField(field.id)" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button>
+					<button ng-click="moveUp(field)" class="btn btn-default"><span class="glyphicon glyphicon-chevron-up"></span></button>
+					<button ng-click="moveDown(field)" class="btn btn-default"><span class="glyphicon glyphicon-chevron-down"></span></button>
 				</div>
 			</td>
 		</tr>
@@ -26,3 +23,31 @@
 		</tr>
 	</tbody>
 </table>
+</div>
+<div class="col-md-6" ng-show="selected_field.title !== undefined">
+	<h4>Bearbeite Feld: {{selected_field.title}}</h4>
+	<table class="table col-md-6">
+		<thead>
+			<th></th>
+			<th></th>
+		</thead>
+		<tbody>
+			<tr>
+				<td>Beschriftung</td>
+				<td><input type="text" ng-model="selected_field.title"></td>
+			</tr>
+			<tr>
+				<td>Feldtyp</td>
+				<td><select ng-options="type for type in type_options" ng-model="selected_field.type" class="form-control"></select></td>
+			</tr>
+			<tr>
+				<td>Platzhalter</td>
+				<td><input type="text" ng-model="selected_field.placeholder"></td>
+			</tr>
+			<tr>
+				<td><button class="btn btn-success" ng-click="saveField(selected_field)">Speichern</button></td>
+			</tr>
+
+		</tbody>
+		</table>
+</div>
