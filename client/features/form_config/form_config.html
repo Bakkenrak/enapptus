@@ -1,16 +1,10 @@
-<style>
-	.clickable:hover{
-		cursor:pointer;
-	}
-</style>
-
-<h2 style="margin-top:100px">Form Struktur</h2>
 <div class="col-md-12">
+<h2>Form Struktur</h2>
 <table class="table">
 	<thead>
 		<th class="col-md-3">Name</th>
-		<th class="col-md-3"></th>
-		<th class="col-md-6"></th>
+		<th class="col-md-2"></th>
+		<th class="col-md-7"></th>
 	</thead>
 	<tbody>
 		<tr class="clickable" ng-repeat="field in form_fields | orderBy: 'rank'" ng-click="selectField(field)">

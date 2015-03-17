@@ -5,6 +5,10 @@ app.controller('navBarCtrl', function($scope, $rootScope, $location){
 				route: '#/formconfig'
 			},
 			{
+				name: 'Aktuelle Form',
+				route: '#/currentform'
+			},
+			{
 				name: 'Usermanagement',
 				route: '#/usermanagement'
 			}

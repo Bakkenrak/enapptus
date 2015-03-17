@@ -19,6 +19,10 @@ app.config(['$routeProvider', function($routeProvider){
 			templateUrl: './client/features/usermanagement/user.html',
 			controller: 'userManagementCtrl'
 		})
+		.when('/currentform', {
+			templateUrl: './client/features/curr_form/curr_form.html',
+			controller: 'currFormCtrl'
+		})
 		.otherwise({
 			redirectTo: '/formconfig'
 		});

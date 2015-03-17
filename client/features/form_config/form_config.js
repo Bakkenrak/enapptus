@@ -224,10 +224,10 @@ app.controller('formConfigCtrl', function($scope, formApiFactory, $q, index, toa
 	
 	var toast = {
 		success : function(){
-			toaster.pop('success', 'Erfolg', 'Aktion ausgeführt!');
+			toaster.pop('success', 'Erfolg', 'Element gespeichert!');
 		},
 		error: function(){
-			toaster.pop('error', 'Fehler', 'Aktion fehlgeschlagen');
+			toaster.pop('error', 'Fehler', 'Speichern fehlgeschlagen');
 		}
 	};
 
