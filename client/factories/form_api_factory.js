@@ -1,4 +1,4 @@
-app.factory('apiFactory', function($http){
+app.factory('formApiFactory', function($http){
 	return {
 		save : function(data){
 			return $http({

@@ -1,4 +1,4 @@
-app.controller('formConfigCtrl', function($scope, apiFactory, $q, index){
+app.controller('formConfigCtrl', function($scope, formApiFactory, $q, index, toaster){
 
 	/**************************************************************
 
@@ -6,8 +6,14 @@ app.controller('formConfigCtrl', function($scope, apiFactory, $q, index){
 
 
 	***************************************************************/
-
-	
+	var toast = {
+		success : function(){
+			toaster.pop('success', 'Erfolg', 'Aktion ausgeführt!');
+		},
+		error: function(){
+			toaster.pop('error', 'Fehler', 'Aktion fehlgeschlagen');
+		}
+	};
 
 	/**
 	 * Option Object Constructor
@@ -63,38 +69,45 @@ app.controller('formConfigCtrl', function($scope, apiFactory, $q, index){
 			field.rank = Number(field.rank);
 			var user_selected_rank = field.rank;
 			if(user_selected_rank === $scope.form_fields.length){
-				apiFactory.save(field).success(
+				formApiFactory.save(field).success(
 					function(data, status){
 						if(status === 200){
 							$scope.form_fields.push(data);
+							toast.success();
 						}else{
-							console.log(data);
+							toast.error();
 						}
 				});
 			}else{
 				angular.forEach($scope.form_fields, function(elm){
 					if(elm.rank>=user_selected_rank){
 						elm.rank++;
-						promises.push(apiFactory.save(elm));
+						promises.push(formApiFactory.save(elm));
 					}
 				});
 				$q.all(promises).then(function(result){
-					apiFactory.save(field).success(
+					formApiFactory.save(field).success(
 					function(data, status){
 						if(status===200){ 
-						console.log('200', 'reload');
-						reloadAll();
+							toast.success();
+							reloadAll();
 						}else{
-							console.log('err when save field', data);
+							toast.error();
 						}
 					});
 				}, function(err){
-					console.log('err when saving other fields', err);
+					toast.error();
 				});
 			}
 		}else{	// is existing field
-			apiFactory.save(field).success(function(saved_field){
-				replaceFieldByID(saved_field);
+			formApiFactory.save(field).success(function(saved_field, status){
+				if(status == 200){
+					replaceFieldByID(saved_field);
+					toast.success();
+				}else{
+					toast.error();
+				}
+				
 			});
 		}
 
@@ -137,19 +150,26 @@ app.controller('formConfigCtrl', function($scope, apiFactory, $q, index){
 	$scope.deleteFormField = function(field){
 		var promises = [];
 		var del_rank = field.rank;
-		apiFactory.deleteElement(field).success(function(data, status){
+		var id = field.fId;
+		formApiFactory.deleteElement(field).success(function(data, status){
 			if(status === 200){
 				angular.forEach($scope.form_fields, function(elm){
 					if(elm.rank > del_rank){
 						elm.rank--;
-						promises.push(apiFactory.save(elm));
+						promises.push(formApiFactory.save(elm));
 					}
 				});
 				$q.all(promises).then(function(result){
 					reloadAll();
+					if(id == $scope.selected_field.fId){
+						$scope.selected_field = {};
+					}
+					toast.success();
+				}, function(err){
+					toast.error();
 				});
 			}else{
-				console.log('error when deleting element');
+				toast.error();
 			}
 		})
 	};
@@ -171,7 +191,7 @@ app.controller('formConfigCtrl', function($scope, apiFactory, $q, index){
 	 * @return {undefined}
 	 */
 	var reloadAll = function(){
-		apiFactory.index().success(function(res, status){
+		formApiFactory.index().success(function(res, status){
 			if(status === 200){
 				$scope.form_fields = convertStringToNumber(res);
 			}else{
@@ -192,11 +212,11 @@ app.controller('formConfigCtrl', function($scope, apiFactory, $q, index){
 		if($scope.selected_field.fId === field.fId){
 					$scope.selected_field.rank++;
 		}
-		apiFactory.save(field);
+		formApiFactory.save(field);
 		for(var i =0; i<$scope.form_fields.length; i++){
 			if(field.rank === $scope.form_fields[i].rank && field.fId !== $scope.form_fields[i].fId){
 				$scope.form_fields[i].rank--;
-				apiFactory.save($scope.form_fields[i]);
+				formApiFactory.save($scope.form_fields[i]);
 				if($scope.selected_field.fId === $scope.form_fields[i].fId){
 					$scope.selected_field.rank--;
 				}
@@ -211,14 +231,14 @@ app.controller('formConfigCtrl', function($scope, apiFactory, $q, index){
 	 */
 	$scope.moveUp = function(field){
 		field.rank--;
-		apiFactory.save(field);
+		formApiFactory.save(field);
 		if($scope.selected_field.fId === field.fId){
 			$scope.selected_field.rank--;
 		}
 		for(var i =0; i<$scope.form_fields.length; i++){
 			if(field.rank === $scope.form_fields[i].rank && field.fId !== $scope.form_fields[i].fId){
 				$scope.form_fields[i].rank++;
-				apiFactory.save($scope.form_fields[i]);
+				formApiFactory.save($scope.form_fields[i]);
 				if($scope.selected_field.fId === $scope.form_fields[i].fId){
 					$scope.selected_field.rank++;
 				}

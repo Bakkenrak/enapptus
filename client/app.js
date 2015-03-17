@@ -1,22 +1,23 @@
 
 var app = angular.module('enactusApplication', [
-	'ngRoute'
+	'ngRoute',
+	'toaster'
 	]);
 
 app.config(['$routeProvider', function($routeProvider){
 	$routeProvider
 		.when('/formconfig', {
-			templateUrl: ('./client/features/form_config/form_config.html'), 
+			templateUrl: './client/features/form_config/form_config.html', 
 			controller: 'formConfigCtrl', 
 			resolve : {
-				index : function(apiFactory){
-					return apiFactory.index();
+				index : function(formApiFactory){
+					return formApiFactory.index();
 				}
 			}
 		})
-		.when('/addUser', {
-			templateUrl: '',
-			controller: ''
+		.when('/usermanagement', {
+			templateUrl: './client/features/usermanagement/user.html',
+			controller: 'userManagementCtrl'
 		})
 		.otherwise({
 			redirectTo: '/formconfig'
