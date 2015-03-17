@@ -46,7 +46,7 @@ app.controller('formConfigCtrl', function($scope, formApiFactory, $q, index, toa
 	 */
 	$scope.changeType = function(){
 		$scope.selected_field.placeholder = '';
-		$scope.selected_field.options = [];
+		$scope.selected_field.option = [];
 	}
 	/**
 	 * scope function for copying field object into selected_field object for editing
@@ -131,15 +131,15 @@ app.controller('formConfigCtrl', function($scope, formApiFactory, $q, index, toa
 	 * scope function for adding a new option (e.g. dropdown option) to a form field object's options property
 	 */
 	$scope.addOption = function(){
-		console.log(typeof $scope.selected_field.options);
+		console.log(typeof $scope.selected_field.option);
 		var opt = new Option($scope.selected_field.new_option, 'option');
-		if(typeof $scope.selected_field.options === 'object'){
-			$scope.selected_field.options.push(opt);
+		if(typeof $scope.selected_field.option === 'object'){
+			$scope.selected_field.option.push(opt);
 		}else{
-			$scope.selected_field.options = [opt];
+			$scope.selected_field.option = [opt];
 		}
 		$scope.selected_field.new_option = '';
-		console.log($scope.selected_field.options);
+		console.log($scope.selected_field.option);
 	}
 	/**
 	 * scope function for deleting a form field object. Following form field obejcts' ranks are decreased and saved. 
