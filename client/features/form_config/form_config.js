@@ -38,7 +38,7 @@ app.controller('formConfigCtrl', function($scope, formApiFactory, $q, index, toa
 	 */
 	$scope.changeType = function(field){
 		field.placeholder = '';
-		field.option = [];
+		field.options = [];
 	}
 	/**
 	 * scope function for selecting object for editing.
@@ -101,15 +101,15 @@ app.controller('formConfigCtrl', function($scope, formApiFactory, $q, index, toa
 	 */
 	$scope.addOption = function(field){
 		var opt = new Option(field.new_option, 'option');
-		if(typeof field.option === 'object'){
-			field.option.push(opt);
+		if(typeof field.options === 'object'){
+			field.options.push(opt);
 		}else{
-			field.option = [opt];
+			field.options = [opt];
 		}
 		field.new_option = '';
 	}
 	/**
-	 * scope function for deleting a form field object. Following form field obejcts' ranks are decreased and saved. 
+	 * scope function for deleting a form field object. Following form field objects' ranks are decreased and saved. 
 	 * Reloads View on success.
 	 * @param  {object} field form field object
 	 * @return {undefined}  
@@ -147,7 +147,7 @@ app.controller('formConfigCtrl', function($scope, formApiFactory, $q, index, toa
 			fId: 0,
 			type: 'Textzeile',
 			placeholder: 'Platzhalter',
-			option: [],
+			options: [],
 			title: 'neues Feld',
 			rank: $scope.form_fields.length+1
 		};

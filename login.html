@@ -22,7 +22,7 @@
 							<input class="form-control" type="password" placeholder ="Bitte Passwort eingeben" ng-model="user.password" required>
 						</div>
 						<div class="form-group text-center">
-							<button ng-disabled="loginForm.$invalid" class="btn btn-default">Einloggen</button>
+							<button ng-disabled="loginForm.$invalid" class="btn btn-default" ng-click="login(user)">Einloggen</button>
 						</div>
 					</form>
 

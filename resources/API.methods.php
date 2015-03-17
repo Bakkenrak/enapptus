@@ -291,7 +291,7 @@
 			$fields = ORM::for_table('field')->find_array();
 
 			foreach ($fields as $idx => $field) {
-				$fields[$idx]['option'] = ORM::for_table('option')->where('fId', $field['fId'])->find_array();
+				$fields[$idx]['options'] = ORM::for_table('option')->where('fId', $field['fId'])->find_array();
 			}
 
             return parent::_response($fields); //form fields array as JSON object
