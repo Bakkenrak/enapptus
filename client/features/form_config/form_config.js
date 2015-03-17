@@ -88,13 +88,13 @@ app.controller('testCtrl', function($scope, apiFactory, $q, index){
 
 	$scope.moveDown = function(field){
 		field.rank++;
-		if($scope.selected_field.id === field.id){
+		if($scope.selected_field.fId === field.fId){
 					$scope.selected_field.rank++;
 		}
 		for(var i =0; i<$scope.form_fields.length; i++){
-			if(field.rank === $scope.form_fields[i].rank && field.id !== $scope.form_fields[i].id){
+			if(field.rank === $scope.form_fields[i].rank && field.fId !== $scope.form_fields[i].fId){
 				$scope.form_fields[i].rank--;
-				if($scope.selected_field.id === $scope.form_fields[i].id){
+				if($scope.selected_field.fId === $scope.form_fields[i].fId){
 					$scope.selected_field.rank--;
 				}
 			}
@@ -102,14 +102,16 @@ app.controller('testCtrl', function($scope, apiFactory, $q, index){
 	};
 
 	$scope.moveUp = function(field){
+		console.log('move up');
 		field.rank--;
-		if($scope.selected_field.id === field.id){
+		if($scope.selected_field.fId === field.fId){
 			$scope.selected_field.rank--;
 		}
 		for(var i =0; i<$scope.form_fields.length; i++){
-			if(field.rank === $scope.form_fields[i].rank && field.id !== $scope.form_fields[i].id){
+			if(field.rank === $scope.form_fields[i].rank && field.fId !== $scope.form_fields[i].fId){
+				console.log('change other', $scope.form_fields[i]);
 				$scope.form_fields[i].rank++;
-				if($scope.selected_field.id === $scope.form_fields[i].id){
+				if($scope.selected_field.fId === $scope.form_fields[i].fId){
 					$scope.selected_field.rank++;
 				}
 			}
