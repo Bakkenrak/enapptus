@@ -16,14 +16,14 @@
 			<td class="col-md-6"><h4>{{field.title}}</h4></td>
 			<td class="col-md-4">			
 				<div class="form-group">
-					<button ng-click="deleteFormField(field)" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button>
 					<button ng-disabled="field.rank===1" ng-click="moveUp(field)" class="btn btn-default"><span class="glyphicon glyphicon-chevron-up"></span></button>
 					<button ng-disabled="field.rank >= form_fields.length" ng-click="moveDown(field)" class="btn btn-default"><span class="glyphicon glyphicon-chevron-down"></span></button>
+					<button ng-click="deleteFormField(field)" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button>
 				</div>
 			</td>
 		</tr>
 		<tr>
-			<td class="col-md-2"><button class="btn btn-success" ng-click="newField()"><h3>Frage hinzufügen</h3></button></td>
+			<td class="col-md-2"><button class="btn btn-success" ng-click="newField()"><h4>Frage hinzufügen</h4></button></td>
 			<td></td>
 			<td></td>
 		</tr>
@@ -31,64 +31,55 @@
 </table>
 </div>
 <div class="col-md-6" ng-show="selected_field.title !== undefined">
-	<h4>Bearbeite Feld: {{selected_field.title}}</h4>
-	<table class="table col-md-6">
-		<thead>
-			<th></th>
-			<th></th>
-		</thead>
-		<tbody>
-			<tr>
-				<td>Beschriftung</td>
-				<td><input class="form-control" type="text" ng-model="selected_field.title"></td>
-			</tr>
-			<tr>
-				<td>Feldtyp</td>
-				<td><select ng-options="type for type in type_options" ng-model="selected_field.type" class="form-control"></select></td>
-			</tr>
-			<tr>
-				<td>Platzhalter</td>
-				<td><input class="form-control" type="text" ng-model="selected_field.placeholder"></td>
-			</tr>
-			<tr>
-				<td>Ranking</td>
-				<td>{{selected_field.rank}}</td>
-			</tr>
-			<tr>
-				<td><button class="btn btn-success" ng-click="saveExistingField(selected_field)">Speichern</button></td>
-				<td></td>
-			</tr>
-
-		</tbody>
-		</table>
-</div>
-<div class="col-md-6" ng-show="new_field !== undefined">
-	<h4>Neues Feld</h4>
-	<form class="form" name="new_field_form">
+	<form class="form" name="field_form">
+		<h4>Bearbeite Feld: {{selected_field.title}}</h4>
 		<table class="table col-md-6">
 			<thead>
-				<th></th>
-				<th></th>
+				<th class="col-md-6"></th>
+				<th class="col-md-6"></th>
 			</thead>
 			<tbody>
 				<tr>
 					<td>Beschriftung</td>
-					<td><input type="text" class="form-control" ng-model="new_field.title" required></td>
+					<td><input class="form-control" type="text" ng-model="selected_field.title" required></td>
 				</tr>
 				<tr>
 					<td>Feldtyp</td>
-					<td><select ng-options="type for type in type_options" class="form-control" ng-model="new_field.type" required></select></td>
+					<td><select ng-options="v.title as v.title for (k,v) in type_options" ng-model="selected_field.type" ng-change="changeType()" class="form-control"</select></td>
 				</tr>
-				<tr>
+
+				<tr ng-show="type_options[selected_field.type].hasOptions">
+					<td>Verfügbare Optionen</td>
+					<td>
+						<table>
+							<tbody>
+								<tr ng-repeat="option in selected_field.options">
+									<td>{{option.value}}</td>
+								</tr>
+								<tr>
+									<td>
+										<input class="form-control" type="text" ng-model="selected_field.new_option">
+									</td>
+									<td>
+										<button class="btn btn-success" ng-click="addOption()">Hinzufügen</button>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</td>
+				</tr>
+				<tr ng-show="type_options[selected_field.type].hasPlaceholder">
 					<td>Platzhalter</td>
-					<td><input type="text" class="form-control" ng-model="new_field.placeholder" required></td>
+					<td><input class="form-control" type="text" ng-model="selected_field.placeholder" ng-required="type_options[selected_field.type].hasPlaceholder"></td>
 				</tr>
 				<tr>
 					<td>Position</td>
-					<td><input type="range" min="0" max="{{form_fields.length}}" step="1" ng-model="new_field.rank" required>{{new_field.rank}}</td>
+					<td ng-hide="selected_field.fId === 0">{{selected_field.rank}}</td>
+					<td ng-show="selected_field.fId === 0"><input type="range" min="1" max="{{form_fields.length+1}}" step="1" ng-model="selected_field.rank">{{selected_field.rank}}</td>
 				</tr>
 				<tr>
-					<td><button ng-disabled="new_field_form.$invalid" class="btn btn-success" ng-click="saveNewField(new_field)">Speichern</button></td>
+					<td><button ng-disabled="field_form.$invalid" class="btn btn-success" ng-click="saveField(selected_field)">Speichern</button></td>
+					<td></td>
 				</tr>
 			</tbody>
 		</table>

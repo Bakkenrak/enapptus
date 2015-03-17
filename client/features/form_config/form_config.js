@@ -1,4 +1,4 @@
-app.controller('testCtrl', function($scope, apiFactory, $q, index){
+app.controller('formConfigCtrl', function($scope, apiFactory, $q, index){
 
 	/**************************************************************
 
@@ -7,7 +7,20 @@ app.controller('testCtrl', function($scope, apiFactory, $q, index){
 
 	***************************************************************/
 
+	
 
+	/**
+	 * Option Object Constructor
+	 * @param {String} value value of option 		
+	 * @param {String} type  type of option
+	 * @param {Integer} fId  @optional - default 0 
+	 */
+	function Option(value, type, fId){
+		this.value = typeof value !== undefined ? value : ''; 
+		this.type = type ? type : 'option';
+		this.fId = fId ? fId : 0;
+		return this;
+	}
 
 	/**
 	 * workaround for parsing field object's rank from string to number when loading from backend. (needed for ng-repeat orderBy filter)
@@ -21,8 +34,14 @@ app.controller('testCtrl', function($scope, apiFactory, $q, index){
 		return fieldarray;
 	}
 
-
-
+	/**
+	 * scope function for initialising a new options array when changing the option type
+	 * @return {undefined} 
+	 */
+	$scope.changeType = function(){
+		$scope.selected_field.placeholder = '';
+		$scope.selected_field.options = [];
+	}
 	/**
 	 * scope function for copying field object into selected_field object for editing
 	 * @param  {object} field selected field
@@ -32,83 +51,120 @@ app.controller('testCtrl', function($scope, apiFactory, $q, index){
 		$scope.new_field = undefined;
 		$scope.selected_field = angular.copy(field);
 	}
+
 	/**
-	 * scope function for saving a field object	 		
+	 * scope function for saving a field object. new object if fID == 0 else existing object	 		
 	 * @param  {object} field field object
 	 * @return {undefined}       
 	 */
-	$scope.saveExistingField = function(field){
-		apiFactory.save(field).success(function(data){
-			console.log(data);
-		});
+	$scope.saveField = function(field){
+		if(field.fId === 0){ // is new field
+			var promises = [];
+			field.rank = Number(field.rank);
+			var user_selected_rank = field.rank;
+			if(user_selected_rank === $scope.form_fields.length){
+				apiFactory.save(field).success(
+					function(data, status){
+						if(status === 200){
+							$scope.form_fields.push(data);
+						}else{
+							console.log(data);
+						}
+				});
+			}else{
+				angular.forEach($scope.form_fields, function(elm){
+					if(elm.rank>=user_selected_rank){
+						elm.rank++;
+						promises.push(apiFactory.save(elm));
+					}
+				});
+				$q.all(promises).then(function(result){
+					apiFactory.save(field).success(
+					function(data, status){
+						if(status===200){ 
+						console.log('200', 'reload');
+						reloadAll();
+						}else{
+							console.log('err when save field', data);
+						}
+					});
+				}, function(err){
+					console.log('err when saving other fields', err);
+				});
+			}
+		}else{	// is existing field
+			apiFactory.save(field).success(function(saved_field){
+				replaceFieldByID(saved_field);
+			});
+		}
+
 	}
 	/**
-	 * scope function for deleting a form field object. Reloads View on success
+	 * helper function for replacing a form field identified by id
+	 * @param  {object} field changed form field
+	 * @return {undefined}
+	 */
+	var replaceFieldByID = function(field){
+		var id = field.fId;
+		for(var i = 0; i<$scope.form_fields.length; i++){
+			if($scope.form_fields[i].fId == id){
+				$scope.form_fields[i] = field; 
+				return undefined;
+			}
+		}
+	}
+	
+	/**
+	 * scope function for adding a new option (e.g. dropdown option) to a form field object's options property
+	 */
+	$scope.addOption = function(){
+		console.log(typeof $scope.selected_field.options);
+		var opt = new Option($scope.selected_field.new_option, 'option');
+		if(typeof $scope.selected_field.options === 'object'){
+			$scope.selected_field.options.push(opt);
+		}else{
+			$scope.selected_field.options = [opt];
+		}
+		$scope.selected_field.new_option = '';
+		console.log($scope.selected_field.options);
+	}
+	/**
+	 * scope function for deleting a form field object. Following form field obejcts' ranks are decreased and saved. 
+	 * Reloads View on success.
 	 * @param  {object} field form field object
 	 * @return {undefined}  
 	 */
 	$scope.deleteFormField = function(field){
+		var promises = [];
+		var del_rank = field.rank;
 		apiFactory.deleteElement(field).success(function(data, status){
 			if(status === 200){
-				reloadAll();
+				angular.forEach($scope.form_fields, function(elm){
+					if(elm.rank > del_rank){
+						elm.rank--;
+						promises.push(apiFactory.save(elm));
+					}
+				});
+				$q.all(promises).then(function(result){
+					reloadAll();
+				});
 			}else{
 				console.log('error when deleting element');
 			}
 		})
 	};
+
 	/**
 	 * scope function for preparing a new field object 
 	 * @return {undefined}
 	 */
 	$scope.newField = function(){
-		$scope.selected_field = {};
-		$scope.new_field = {
-			rank: $scope.form_fields.length
+		$scope.selected_field = {
+			fId: 0,
+			title: 'neues Feld',
+			rank: $scope.form_fields.length+1
 		};
 	}
-	/**
-	 * scope function for saving a new form field. If the new form field is not added at the end of the form 
-	 * but between already existing fields, then the following fields' rank is updated as well.  
-	 * @param  {object} field new field object
-	 * @return {undefined}
-	 */
-	$scope.saveNewField = function(field){
-		var promises = [];
-		field.fId = '0';
-		field.rank = Number(field.rank);
-		var user_selected_rank = field.rank;
-		if(user_selected_rank === $scope.form_fields.length){
-			apiFactory.save(field).success(
-				function(data, status){
-					if(status === 200){
-						$scope.form_fields.push(data);
-					}else{
-						console.log(data);
-					}
-			});
-		}else{
-			angular.forEach($scope.form_fields, function(elm){
-				if(elm.rank>=user_selected_rank){
-					elm.rank++;
-					promises.push(apiFactory.save(elm));
-				}
-			});
-			$q.all(promises).then(function(result){
-				apiFactory.save(field).success(
-				function(data, status){
-					if(status===200){ 
-					console.log('200', 'reload');
-					reloadAll();
-					}else{
-						console.log('err when save field', data);
-					}
-				});
-			}, function(err){
-				console.log('err when saving other fields', err);
-			});
- 
-		}
-	};
 
 	/**
 	 * reloads all form fields. Loaded fields are stored in scope variable "form_fields"
@@ -181,7 +237,29 @@ app.controller('testCtrl', function($scope, apiFactory, $q, index){
 	***************************************************************/
 
 
-	$scope.type_options = [ 'Textzeile', 'Textfeld'];
+	$scope.type_options = {
+		'Radiobutton' : {
+			hasOptions : true, 
+			hasPlaceholder : false,
+			title: 'Radiobutton'
+		},
+		'Textzeile': {
+			hasOptions: false,
+			hasPlaceholder: true,
+			title: 'Textzeile'
+		},
+		'Textfeld': {
+			hasOptions: false,
+			hasPlaceholder : true,
+			title: 'Textfeld'
+		},
+		'Dropdown' : {
+			hasOptions: true, 
+			hasPlaceholder : false,
+			title: 'Dropdown'
+		}
+	};
+
 	$scope.selected_field = {};
 	$scope.form_fields = convertStringToNumber(index.data); 
 
