@@ -11,7 +11,7 @@ app.config(['$routeProvider', function($routeProvider){
 			templateUrl: './client/features/form_config/form_config.html', 
 			controller: 'formConfigCtrl', 
 			data: {
-				admin_only: false
+				admin_only: true
 			},
 			resolve : {
 				index : function(formApiFactory){
@@ -41,6 +41,13 @@ app.config(['$routeProvider', function($routeProvider){
 				form_fields : function(formApiFactory){
 					return formApiFactory.index();
 				}
+			}
+		})
+		.when('/voting', {
+			templateUrl: './client/features/voting/voting.html',
+			controller: 'votingCtrl',
+			data: {
+				admin_only: false
 			}
 		})
 		.otherwise({

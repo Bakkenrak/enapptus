@@ -57,6 +57,11 @@ app.controller('navBarCtrl', function($scope, $rootScope, $location, myUser, use
 				name: 'Usermanagement',
 				route: '#/usermanagement',
 				admin_only: $route.routes['/usermanagement'].data.admin_only 
+			},
+			{
+				name: 'Abstimmung',
+				route: '#/voting',
+				admin_only: $route.routes['/voting'].data.admin_only 
 			}
 		];
 

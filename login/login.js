@@ -3,6 +3,14 @@ var app = angular.module('loginApp', [
 	])
 .controller('loginCtrl', function($scope, $http, toaster){
 	
+
+	/**************************************************************
+
+							Function Declarations
+
+
+	***************************************************************/
+	
 	/**
 	 * scope function for logging in
 	 * @param  {object} user user object with properties username and password
@@ -29,12 +37,15 @@ var app = angular.module('loginApp', [
 			});
 	};
 
+	/**
+	 * scope function for sending registration form. 
+	 * @param  {object} user user form for registration
+	 * @return {undefined}      
+	 */
 	$scope.sendRegistration = function(user){
 		console.log('send registration', user);
 		$scope.registration_success = true;
 	};
-
-
 
 	/**
 	 * scope function for switching between login and register form
@@ -55,6 +66,13 @@ var app = angular.module('loginApp', [
 				break;
 		};
 	};
+
+	/**************************************************************
+
+							Scope Init
+
+
+	***************************************************************/
 
 
 	$scope.user = {};
