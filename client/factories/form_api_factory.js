@@ -1,5 +1,13 @@
 app.factory('formApiFactory', function($http){
+
+
 	return {
+
+		/**
+		 * function for saving a form field
+		 * @param  {object} data form field object
+		 * @return {object}      $http object with success and error for async calls
+		 */
 		save : function(data){
 			return $http({
 				method:'POST',
@@ -8,6 +16,12 @@ app.factory('formApiFactory', function($http){
 				headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
 			});
 		},
+		
+		/**
+		 * function for updating a form field
+		 * @param  {object} data form field object which should be updated
+		 * @return {object}      $http object with success and error for async calls
+		 */
 		update : function(data){
 			return $http({
 				method:'POST',
@@ -16,6 +30,10 @@ app.factory('formApiFactory', function($http){
 				headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
 			});
 		}, 
+		/**
+		 * function for querying all form fields
+		 * @return {object} $http object with success and error for async calls
+		 */
 		index : function(){
 			return $http({
 				method:'GET',
@@ -23,6 +41,12 @@ app.factory('formApiFactory', function($http){
 				headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
 			});
 		},
+
+		/**
+		 * function for deleting a form field
+		 * @param  {object} field form field which should be deleletd
+		 * @return {object}       $http object with success and error for async calls
+		 */
 		deleteElement : function(field){
 			return $http({
 				method:'DELETE',

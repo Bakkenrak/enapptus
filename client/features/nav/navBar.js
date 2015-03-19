@@ -19,6 +19,30 @@ app.controller('navBarCtrl', function($scope, $rootScope, $location, myUser, use
 			$scope.numberInactive = count;
 		};
 	};
+
+
+
+	/** listener for route change. sets scope variable to curren route */
+	$rootScope.$on('$locationChangeSuccess', function(event){
+        $scope.currentRoute = '#'+$location.path();
+	});
+
+	/** listener for user.changed event. refreshes inactive user number */
+	$scope.$on('user.changed', function(event, args){
+		findInactiveUser();
+	});
+	/** listener for user.deleted event. refreshes inactive user number */
+	$scope.$on('user.deleted', function(event, args){
+		findInactiveUser();
+	});
+
+
+	/**************************************************************
+
+							Scope Init
+
+
+	***************************************************************/
 	/** @type {Array} store for available navigation objects */
 	$scope.navItems = [
 			{
@@ -37,18 +61,6 @@ app.controller('navBarCtrl', function($scope, $rootScope, $location, myUser, use
 				admin_only: true
 			}
 		];
-
-	$rootScope.$on('$locationChangeSuccess', function(event){
-        $scope.currentRoute = '#'+$location.path();
-	});
-
-
-	$scope.$on('user.changed', function(event, args){
-		findInactiveUser();
-	});
-	$scope.$on('user.deleted', function(event, args){
-		findInactiveUser();
-	});
 
 	$scope.isAdmin = myUser.isAdmin();
 	findInactiveUser();

@@ -1,20 +1,14 @@
-app.controller('userManagementCtrl', function($scope, myModal, toaster, myUser, userApiFactory, $rootScope){
+app.controller('userManagementCtrl', function($scope, myModal, toaster, myUser, userApiFactory, $rootScope, users){
 	
 
-	$scope.users = userApiFactory.index();
+	/**************************************************************
 
-	/** @type {object} modal service for controlling the user modal */
-	var modal = myModal.getNewModal('./client/features/usermanagement/modal.html', 'userModalCtrl');
+							Function Declarations
 
 
-	/** listener for user.deleted event. 
-	 * @event angular default event object
-	 * @args user who was deleted (should be replaced by promise).
-	 */
-	$scope.$on('user.deleted', function(event, args){
-		removeFromList(args);
-		toaster.pop('success', 'Löschen', 'Benutzer'+ args.username +'gelöscht.');
-	});
+	***************************************************************/
+
+
 	/**
 	 * helper function for finding and deleting user object from user list
 	 * @param  {object} user user object 
@@ -27,7 +21,6 @@ app.controller('userManagementCtrl', function($scope, myModal, toaster, myUser, 
 				}
 			};	
 	};
-
 
 	/**
 	 * scope function for saving a user
@@ -48,4 +41,27 @@ app.controller('userManagementCtrl', function($scope, myModal, toaster, myUser, 
 			myModal.setContent({'user':user});
 			modal.activate();	
 		};	
+
+
+	/** listener for user.deleted event. 
+	 * @event angular default event object
+	 * @args user who was deleted (should be replaced by promise).
+	 */
+	$scope.$on('user.deleted', function(event, args){
+		removeFromList(args);
+		toaster.pop('success', 'Löschen', 'Benutzer'+ args.username +'gelöscht.');
+	});
+
+
+	/**************************************************************
+
+							Scope Init
+
+
+	***************************************************************/
+
+	$scope.users = users;
+
+	/** @type {object} modal service for controlling the user modal */
+	var modal = myModal.getNewModal('./client/features/usermanagement/modal.html', 'userModalCtrl');
 });
