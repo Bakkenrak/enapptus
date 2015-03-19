@@ -8,7 +8,7 @@
 	</thead>
 	<tbody>
 		<tr class="clickable" ng-repeat="field in form_fields | orderBy: 'rank'" ng-click="selectField(field)">
-			<td><h4>{{field.title}}</h4></td>
+			<td>{{field.title}}</td>
 			<td>			
 				<div class="form-group pull-right">
 					<button ng-disabled="field.rank===1" ng-click="moveUp(field)" class="btn btn-default"><span class="glyphicon glyphicon-chevron-up"></span></button>
