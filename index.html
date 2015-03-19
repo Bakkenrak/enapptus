@@ -15,7 +15,7 @@
 		<div class="container">
 			<div class="collapse navbar-collapse" id="main-nav">
 				<ul class="nav navbar-nav">
-					<li ng-class="{ 'active': item.route == currentRoute}" ng-repeat="item in navItems">
+					<li ng-class="{ 'active': item.route == currentRoute}" ng-repeat="item in navItems" ng-show="item.admin_only ? isAdmin : true">
 						<a href="{{item.route}}">
 							<h4>{{item.name}} <span ng-show="item.name==='Usermanagement'"class="badge">{{numberInactive}}</span></h4>
 						</a>

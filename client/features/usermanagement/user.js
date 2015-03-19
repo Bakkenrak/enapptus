@@ -1,36 +1,11 @@
-app.controller('userManagementCtrl', function($scope, myModal, toaster){
+app.controller('userManagementCtrl', function($scope, myModal, toaster, myUser, userApiFactory, $rootScope){
 	
+
+	$scope.users = userApiFactory.index();
+
 	/** @type {object} modal service for controlling the user modal */
 	var modal = myModal.getNewModal('./client/features/usermanagement/modal.html', 'userModalCtrl');
 
-	/**
-	 * dummy list for testing
-	 * @type {Array}
-	 */
-	$scope.users = [
-		{
-			id: 1,
-			username: 'tester',
-			email: 'test@test',
-			is_admin: false,
-			is_active: true
-		},
-		{
-			id: 2,
-			username: 'tester2',
-			email: 'test@test',
-			is_admin: true,
-			is_active: true
-		},
-		{
-			id: 3,
-			username: 'tester3',
-			email: 'test@test',
-			is_admin: true,
-			is_active: true
-		}
-
-	];
 
 	/** listener for user.deleted event. 
 	 * @event angular default event object
@@ -61,6 +36,7 @@ app.controller('userManagementCtrl', function($scope, myModal, toaster){
 	 */
 	$scope.saveUser = function(user){
 		console.log('save', user);
+		$rootScope.$broadcast('user.changed', user);
 	};
 
 	/**
