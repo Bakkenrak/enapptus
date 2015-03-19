@@ -8,23 +8,30 @@ app.factory('userApiFactory', function($http){
 	var users = [
 		{
 			id: 1,
-			username: 'tester',
-			email: 'test@test',
-			is_admin: false,
-			is_active: false
-		},
-		{
-			id: 2,
-			username: 'tester2',
+			username: 'lucas',
 			email: 'test@test',
 			is_admin: true,
 			is_active: true
 		},
 		{
+			id: 2,
+			username: 'tester1',
+			email: 'test@test',
+			is_admin: false,
+			is_active: false
+		},
+		{
 			id: 3,
+			username: 'tester2',
+			email: 'test@test',
+			is_admin: false,
+			is_active: true
+		},
+		{
+			id: 4,
 			username: 'tester3',
 			email: 'test@test',
-			is_admin: true,
+			is_admin: false,
 			is_active: true
 		}
 

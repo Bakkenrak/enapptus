@@ -48,7 +48,7 @@ app.config(['$routeProvider', function($routeProvider){
 		});
 }])
 .run(function(myUser, $location, $rootScope){
-	
+
 	/**
 	 * listener for interception route changes. checks for permission. if permission is not matched redirect to default route
 	 * @param  {object} event         event
@@ -75,6 +75,6 @@ app.config(['$routeProvider', function($routeProvider){
 		username: 'lucas',
 		email:'test@test',
 		is_active: true,
-		is_admin: false
+		is_admin: true
 	});		
 });

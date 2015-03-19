@@ -1,4 +1,4 @@
-app.controller('navBarCtrl', function($scope, $rootScope, $location, myUser, userApiFactory){
+app.controller('navBarCtrl', function($scope, $rootScope, $location, myUser, userApiFactory, $route){
 	
 	/**
 	 * function for finding number of inactive users for displaying in navbar. 
