@@ -1,7 +1,8 @@
 
 var app = angular.module('enactusApplication', [
 	'ngRoute',
-	'toaster'
+	'toaster',
+	'btford.modal'
 	]);
 
 app.config(['$routeProvider', function($routeProvider){

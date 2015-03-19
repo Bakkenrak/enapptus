@@ -1,0 +1,18 @@
+<div class="btf-modal panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Benutzer löschen</h3>
+  </div>
+  <div class="panel-body">
+  	<div class="col-md-12">
+      <div class="col-md-12">
+  		 	 <p>Wollen Sie wirklich Benutzer <b>{{modal.user.username}}</b> löschen? Die Aktion kann nicht rückgängig gemacht werden.</p>
+      </div>
+      <div class="col-md-12 text-center">
+        <div class="btn-group">
+              <button class="btn btn-success" ng-click="modal.deleteUser(modal.user)"><span class="glyphicon glyphicon-ok"></span></button>
+              <button class="btn btn-danger" ng-click="modal.close()"><span class="glyphicon glyphicon-remove"></span></button>
+         </div>
+     </div>
+  	</div>
+  </div>
+</div>
