@@ -18,11 +18,21 @@ app.config(['$routeProvider', function($routeProvider){
 		})
 		.when('/usermanagement', {
 			templateUrl: './client/features/usermanagement/user.html',
-			controller: 'userManagementCtrl'
+			controller: 'userManagementCtrl',
+			resolve : {
+				users : function(userApiFactory){
+					return userApiFactory.index();
+				}
+			}
 		})
 		.when('/currentform', {
 			templateUrl: './client/features/curr_form/curr_form.html',
-			controller: 'currFormCtrl'
+			controller: 'currFormCtrl',
+			resolve : {
+				form_fields : function(formApiFactory){
+					return formApiFactory.index();
+				}
+			}
 		})
 		.otherwise({
 			redirectTo: '/formconfig'
