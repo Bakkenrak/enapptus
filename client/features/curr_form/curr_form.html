@@ -1,0 +1,46 @@
+<div class="col-md-8">
+	<form class="form" name="request_form">
+		<table class="table">
+			<tbody>
+				<tr ng-repeat="field in form_fields | orderBy: 'rank'">
+					<td class="col-md-4 noselect">{{field.title}}</td>
+					<td>
+						<div ng-switch = "type_options[field.type].input_type">
+							<div ng-switch-when="text">
+								<input  type="text" placeholder="{{field.placeholder}}" class="form-control" ng-model="field.value" ng-required="field.required ? true: true">
+							</div>
+							<div ng-switch-when="textarea">
+								<textarea type="text" placeholder="{{field.placeholder}}" class="form-control" ng-model="field.value" ng-required="field.required ? true: true"></textarea>
+							</div>
+							<div ng-switch-when="radio">
+								<ul class="list-group">
+									<li ng-repeat="option in field.options" class="list-group-item">
+										<div class="input-group">
+											<span class="input-group-addon">
+												<input type="radio" ng-model="field.value" ng-value="option.value" ng.required="field.value != undefined">
+											</span>
+											<p class="form-control noselect">{{option.value}}</p>
+										</div>
+									</li>
+								</ul>
+							</div>
+							<div ng-switch-when="select">  
+								<select class="form-control" ng-options="option.value for option in field.options" ng-model="form[field.title]" ng-required="field.required ? true: true"></select>
+							</div>
+							<div ng-switch-when="file">  
+
+								
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<button ng-disabled="request_form.$invalid" class="btn btn-primary" ng-click="sendForm()">Absenden</button>
+					</td>
+					<td></td>
+				</tr>
+			</tbody>
+		</table>
+	</form>
+</div>
