@@ -1,4 +1,4 @@
-app.controller('formConfigCtrl', function($scope, formApiFactory, $q, index, toaster){
+app.controller('formConfigCtrl', function($scope, formApiFactory, $q, index, toaster, types){
 
 	/**************************************************************
 
@@ -231,28 +231,7 @@ app.controller('formConfigCtrl', function($scope, formApiFactory, $q, index, toa
 		}
 	};
 
-	$scope.type_options = {
-		'Radiobutton' : {
-			hasOptions : true, 
-			hasPlaceholder : false,
-			title: 'Radiobutton'
-		},
-		'Textzeile': {
-			hasOptions: false,
-			hasPlaceholder: true,
-			title: 'Textzeile'
-		},
-		'Textfeld': {
-			hasOptions: false,
-			hasPlaceholder : true,
-			title: 'Textfeld'
-		},
-		'Dropdown' : {
-			hasOptions: true, 
-			hasPlaceholder : false,
-			title: 'Dropdown'
-		}
-	};
+	$scope.type_options = types.getTypes();
 
 	$scope.form_fields = convertStringToNumber(index.data); 
 
