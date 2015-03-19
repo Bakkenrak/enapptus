@@ -1,5 +1,4 @@
 app.controller('userModalCtrl', function (myModal, $rootScope) {
-	
 	this.user = myModal.getContent('user');
 
 	var modal = myModal.getCurrentModal();

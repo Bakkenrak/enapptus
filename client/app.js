@@ -28,6 +28,12 @@ app.config(['$routeProvider', function($routeProvider){
 			redirectTo: '/formconfig'
 		});
 }])
-.run(function(){
-	
+.run(function(myUser){
+	myUser.setUser({
+		id: 1,
+		username: 'lucas',
+		email:'test@test',
+		is_active: true,
+		is_admin: true
+	});		
 });

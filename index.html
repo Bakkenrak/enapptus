@@ -14,10 +14,10 @@
 	<nav class="navbar navbar-inverse navbar-fixed-top center" role="navigation" ng-controller="navBarCtrl">
 		<div class="container">
 			<div class="collapse navbar-collapse" id="main-nav">
-				<ul class="nav navbar-nav" ng-repeat="item in navItems">
-					<li ng-class="{ 'active': item.route == currentRoute}">
+				<ul class="nav navbar-nav">
+					<li ng-class="{ 'active': item.route == currentRoute}" ng-repeat="item in navItems">
 						<a href="{{item.route}}">
-							<h4>{{item.name}}</h4>
+							<h4>{{item.name}} <span ng-show="item.name==='Usermanagement'"class="badge">{{numberInactive}}</span></h4>
 						</a>
 					</li>
 				</ul>
@@ -45,6 +45,7 @@
 	<script type="text/javascript" src="client/factories/form_api_factory.js"></script>
 	<script type="text/javascript" src="client/factories/user_api_factory.js"></script>
 	<script type="text/javascript" src="client/factories/modal_factory.js"></script>
+	<script type="text/javascript" src="client/factories/my_user_factory.js"></script>
 	<script type="text/javascript" src="client/factories/supported_type_factory.js"></script>
 	<script type="text/javascript" src="client/features/form_config/form_config.js"></script>
 	<script type="text/javascript" src="client/features/usermanagement/modal.js"></script>
