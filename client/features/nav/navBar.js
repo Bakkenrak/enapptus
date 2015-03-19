@@ -1,7 +1,5 @@
 app.controller('navBarCtrl', function($scope, $rootScope, $location, myUser, userApiFactory){
-
-
-
+	
 	/**
 	 * function for finding number of inactive users for displaying in navbar. 
 	 * current user must be admin.
@@ -48,17 +46,17 @@ app.controller('navBarCtrl', function($scope, $rootScope, $location, myUser, use
 			{
 				name: 'Form Konfigurator',
 				route: '#/formconfig',
-				admin_only: false
+				admin_only: $route.routes['/formconfig'].data.admin_only 
 			},
 			{
 				name: 'Aktuelle Form',
 				route: '#/currentform',
-				admin_only: false
+				admin_only: $route.routes['/currentform'].data.admin_only 
 			},
 			{
 				name: 'Usermanagement',
 				route: '#/usermanagement',
-				admin_only: true
+				admin_only: $route.routes['/usermanagement'].data.admin_only 
 			}
 		];
 
