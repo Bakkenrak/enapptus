@@ -62,7 +62,7 @@ app.controller('formConfigCtrl', function($scope, formApiFactory, $q, index, toa
 			formApiFactory.save(field).success(function(new_field, status){
 				if(status == 200){
 					toast.success();
-					replaceFieldByID(new_field,0);
+					replaceFieldByID(new_field, true);
 				}else{
 					toast.error();
 				}
