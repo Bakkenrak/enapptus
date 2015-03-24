@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 11, 2015 at 04:04 
+-- Generation Time: Mar 24, 2015 at 03:28 
 -- Server version: 5.6.21
 -- PHP Version: 5.6.3
 
@@ -26,6 +26,7 @@ SET time_zone = "+00:00";
 -- Table structure for table `answer`
 --
 
+DROP TABLE IF EXISTS `answer`;
 CREATE TABLE IF NOT EXISTS `answer` (
   `aId` int(11) NOT NULL,
   `fId` int(11) NOT NULL,
@@ -38,6 +39,7 @@ CREATE TABLE IF NOT EXISTS `answer` (
 -- Table structure for table `application`
 --
 
+DROP TABLE IF EXISTS `application`;
 CREATE TABLE IF NOT EXISTS `application` (
 `aId` int(11) NOT NULL,
   `time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -49,13 +51,15 @@ CREATE TABLE IF NOT EXISTS `application` (
 -- Table structure for table `field`
 --
 
+DROP TABLE IF EXISTS `field`;
 CREATE TABLE IF NOT EXISTS `field` (
 `fId` int(11) NOT NULL,
   `type` varchar(50) NOT NULL,
   `title` varchar(255) NOT NULL,
   `placeholder` varchar(255) NOT NULL,
-  `rank` int(11) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;
+  `rank` int(11) NOT NULL,
+  `is_required` tinyint(1) NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -63,12 +67,13 @@ CREATE TABLE IF NOT EXISTS `field` (
 -- Table structure for table `member`
 --
 
+DROP TABLE IF EXISTS `member`;
 CREATE TABLE IF NOT EXISTS `member` (
 `mId` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `admin` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -76,6 +81,7 @@ CREATE TABLE IF NOT EXISTS `member` (
 -- Table structure for table `option`
 --
 
+DROP TABLE IF EXISTS `option`;
 CREATE TABLE IF NOT EXISTS `option` (
   `fId` int(11) NOT NULL,
   `type` varchar(50) NOT NULL,
@@ -88,6 +94,7 @@ CREATE TABLE IF NOT EXISTS `option` (
 -- Table structure for table `question`
 --
 
+DROP TABLE IF EXISTS `question`;
 CREATE TABLE IF NOT EXISTS `question` (
   `mId` int(11) NOT NULL,
   `aId` int(11) NOT NULL,
@@ -101,6 +108,7 @@ CREATE TABLE IF NOT EXISTS `question` (
 -- Table structure for table `vote`
 --
 
+DROP TABLE IF EXISTS `vote`;
 CREATE TABLE IF NOT EXISTS `vote` (
   `mid` int(11) NOT NULL,
   `aId` int(11) NOT NULL,
@@ -166,12 +174,12 @@ MODIFY `aId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 -- AUTO_INCREMENT for table `field`
 --
 ALTER TABLE `field`
-MODIFY `fId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=32;
+MODIFY `fId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=71;
 --
 -- AUTO_INCREMENT for table `member`
 --
 ALTER TABLE `member`
-MODIFY `mId` int(11) NOT NULL AUTO_INCREMENT;
+MODIFY `mId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
 --
 -- Constraints for dumped tables
 --

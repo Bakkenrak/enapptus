@@ -113,7 +113,7 @@
 
 		/**
 		*	Holds functionality regarding application administration
-		*	Calls to api/member
+		*	Calls to api/application
 		*/
 		protected function application() {
 			if($this->verb == 'save') { //call to api/application/save
@@ -331,6 +331,8 @@
 				return parent::_response(Array('error' => "Attribute placeholder is missing"), 400);
 			if(!isset($input->rank)) 
 				return parent::_response(Array('error' => "Attribute rank is missing"), 400);
+			if(!isset($input->is_required)) 
+				return parent::_response(Array('error' => "Attribute is_required is missing"), 400);
 
 
 			$field = ORM::for_table('field')->use_id_column('fId')->where('fId', $input->fId)->find_one(); //retrieve by id
@@ -342,6 +344,7 @@
 			$field->type = $input->type;
 			$field->placeholder = $input->placeholder;
 			$field->rank = $input->rank;
+			$field->is_required = $input->$is_required;
 			$field->save();
 
 			//remove old options
