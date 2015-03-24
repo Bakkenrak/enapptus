@@ -54,17 +54,17 @@
 									<td>
 										<div ng-switch = "type_options[field.type].input_type">
 											<div ng-switch-when="text">
-												<input  type="text" placeholder="{{field.placeholder}}" class="form-control" ng-model="field.value" ng-required="field.required ? true: true" ng-disabled="isBlocked">
+												<input  type="text" placeholder="{{field.placeholder}}" class="form-control" ng-model="field.value" ng-required="field.is_required !== '0'" ng-disabled="isBlocked">
 											</div>
 											<div ng-switch-when="textarea">
-												<textarea type="text" placeholder="{{field.placeholder}}" class="form-control" ng-model="field.value" ng-required="field.required ? true: true"  ng-disabled="isBlocked" ></textarea>
+												<textarea type="text" placeholder="{{field.placeholder}}" class="form-control" ng-model="field.value" ng-required="field.is_required !== '0'"  ng-disabled="isBlocked" ></textarea>
 											</div>
 											<div ng-switch-when="radio">
 												<ul class="list-group">
 													<li ng-repeat="option in field.options" class="list-group-item">
 														<div class="input-group">
 															<span class="input-group-addon">
-																<input type="radio" ng-model="field.value" ng-value="option.value" ng-required="field.value === undefined" ng-disabled="isBlocked">
+																<input type="radio" ng-model="field.value" ng-value="option.value" ng-required="field.is_required !== '0' ? field.value === undefined : false" ng-disabled="isBlocked">
 															</span>
 															<p class="form-control noselect">{{option.value}}</p>
 														</div>
@@ -72,7 +72,7 @@
 												</ul>
 											</div>
 											<div ng-switch-when="select">  
-												<select class="form-control" ng-options="option.value for option in field.options" ng-model="form[field.title]" ng-required="field.required ? true: true" ng-disabled="isBlocked"></select>
+												<select class="form-control" ng-options="option.value for option in field.options" ng-model="form[field.title]" ng-required="field.is_required !== '0'" ng-disabled="isBlocked"></select>
 											</div>
 											<div ng-switch-when="file">  
 

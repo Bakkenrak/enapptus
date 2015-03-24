@@ -15,7 +15,7 @@ app.controller('formCtrl', function($scope,formApiFactory, types, toaster){
 
 
 	/**
-	 * scope on click placeholder function for saving form.  
+	 * scope on click function for saving form. on success response aId is saved for future form posts.  
 	 * @return {undefined} 
 	 */
 	$scope.sendForm = function(form_fields){
@@ -25,7 +25,6 @@ app.controller('formCtrl', function($scope,formApiFactory, types, toaster){
 		}).success(function(res, status){
 			if(status === 200){
 				toaster.pop('success','Erfolg', 'Bewerbung gesendet.');
-				console.log(res);
 				aId = res;
 				$scope.isBlocked=true;
 			}else{
@@ -41,7 +40,9 @@ app.controller('formCtrl', function($scope,formApiFactory, types, toaster){
 
 
 	***************************************************************/
+	/** @type {Number} application id. used for  */
 	var aId = 0;
+	
 	$scope.form_fields = [];
 	formApiFactory.index().success(function(result, status){
 		if(status===200){
