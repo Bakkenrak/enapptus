@@ -104,6 +104,7 @@ abstract class API
         $status = array(  
             200 => 'OK',
             400 => 'Bad Request',
+            401 => 'Unauthorized',
             404 => 'Not Found',
             403 => 'Forbidden',   
             405 => 'Method Not Allowed',

@@ -10,6 +10,7 @@
 	    $API = new MyAPI($_REQUEST['request'], $_SERVER['HTTP_ORIGIN']);
 	    echo $API->processAPI();
 	} catch (Exception $e) {
+		header("HTTP/1.1 " . $e->getCode());
 	    echo json_encode(Array('error' => $e->getMessage()));
 	}
 

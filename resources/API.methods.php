@@ -10,7 +10,29 @@
 	    public function __construct($request, $origin) {
 	        parent::__construct($request);
 
-	        //Authentication could go here
+	        // Authentication
+	        if(!($this->endpoint == 'login') &&
+	        	!($this->method == 'GET' && $this->endpoint == 'form') &&
+	        	!($this->method == 'POST' && $this->endpoint == 'application')){
+
+	        	throw new Exception('Authentication required', 401);
+	        }
+	        
+	    }
+
+
+
+	    protected function login(){
+	    	if ($this->method == 'POST') { //returns form data on GET requests
+
+		        	return $this->doLogin();
+
+		        } 
+		        else {
+
+		            return parent::_response(Array('error' => "Only accepts POST requests"), 403);
+
+		        }
 	    }
 
 	    /**
@@ -284,6 +306,23 @@
 
 
 	// LOGIC ----------------------------------------------------------------
+
+
+		private function doLogin(){
+			$input = json_decode($this->file); //decode input JSON
+
+			if(!isset($input->member)) 
+				return parent::_response(Array('error' => "Attribute member is missing"), 400);
+			if(!isset($input->password)) 
+				return parent::_response(Array('error' => "Attribute password is missing"), 400);
+
+			$member = ORM::for_table('member')->where('name', $input->member)->find_one();
+			if(!$member || $member->password != $input->password)
+				return parent::_response(Array('error' => 'Wrong member name or password'), 401);
+
+			return parent::_response('toooooookkkeeeeeeeenn');
+		}
+
 
 		// Form fields ------------------------------------------------------
 
