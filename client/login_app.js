@@ -1,7 +1,8 @@
 var app = angular.module('loginApp', [
-	'toaster'
+	'toaster',
+	'angular-md5'
 	])
-.controller('loginCtrl', function($scope, $http, toaster){
+.controller('loginCtrl', function($scope, $http, toaster, md5){
 	
 
 	/**************************************************************
@@ -17,10 +18,11 @@ var app = angular.module('loginApp', [
 	 * @return {undefined} 
 	 */
 	$scope.login = function(user){
+		user.password = md5.createHash(user.password);
 		console.log(user);
 		$http({
 				method:'POST',
-				url: 'asdasdasd',
+				url: './api/login',
 				data: user,
 				headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
 			}).success(function(res, status){
@@ -35,6 +37,7 @@ var app = angular.module('loginApp', [
 				toaster.pop('error', '', 'Fehler beim Loginvorgang.');
 				console.log(err, status);
 			});
+		$scope.user = {};
 	};
 
 	/**

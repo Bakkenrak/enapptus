@@ -18,7 +18,7 @@
 					<div ng-hide="registration_success">
 					<form name="loginForm" ng-hide="register">
 						<div class="form-group">
-							<input class="form-control" type="text" placeholder="Bitte Benutzername eingeben" ng-model="user.username" required>
+							<input class="form-control" type="text" placeholder="Bitte Benutzername eingeben" ng-model="user.member" required>
 						</div>
 						<div class="form-group">
 							<input class="form-control" type="password" placeholder ="Bitte Passwort eingeben" ng-model="user.password" required>
@@ -26,7 +26,7 @@
 					</form>
 					<form name="registerForm" ng-show="register">
 						<div class="form-group">
-							<input class="form-control" type="text" placeholder="Bitte Benutzername eingeben" ng-model="new_user.username" required>
+							<input class="form-control" type="text" placeholder="Bitte Benutzername eingeben" ng-model="new_user.member" required>
 						</div>
 						<div class="form-group">
 							<input class="form-control" type="email" placeholder ="Bitte Email eingeben" ng-model="new_user.email" required>
@@ -55,6 +55,7 @@
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular-animate.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/angularjs-toaster/0.4.9/toaster.min.js"></script>
+	<script type="text/javascript" src="client/lib/angular-md5.js"></script>
 	<script type="text/javascript" src="client/login_app.js"></script>
 </body>
 
