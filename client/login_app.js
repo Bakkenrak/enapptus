@@ -1,8 +1,7 @@
 var app = angular.module('loginApp', [
-	'toaster',
-	'angular-md5'
+	'toaster'
 	])
-.controller('loginCtrl', function($scope, $http, toaster, md5, $window	){
+.controller('loginCtrl', function($scope, $http, toaster, $window	){
 	
 
 	/**************************************************************
@@ -18,7 +17,6 @@ var app = angular.module('loginApp', [
 	 * @return {undefined} 
 	 */
 	$scope.login = function(user){
-		user.password = md5.createHash(user.password);
 		console.log(user);
 		$http({
 				method:'POST',
