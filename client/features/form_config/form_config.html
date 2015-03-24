@@ -11,9 +11,9 @@
 			<td>{{field.title}}</td>
 			<td>			
 				<div class="form-group pull-right">
-					<button ng-disabled="field.rank===1" ng-click="moveUp(field)" class="btn btn-default"><span class="glyphicon glyphicon-chevron-up"></span></button>
-					<button ng-disabled="field.rank >= form_fields.length" ng-click="moveDown(field)" class="btn btn-default"><span class="glyphicon glyphicon-chevron-down"></span></button>
-					<button ng-click="deleteFormField(field)" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span></button>
+					<button ng-disabled="field.rank===1" ng-click="moveUp(field)" class="btn btn-default" data-toggle="tooltip" data-placement="left" title="Feld nach oben verschieben"><span class="glyphicon glyphicon-chevron-up"></span></button>
+					<button ng-disabled="field.rank >= form_fields.length" ng-click="moveDown(field)" class="btn btn-default" data-toggle="tooltip" data-placement="left" title="Feld nach unten verschieben"><span class="glyphicon glyphicon-chevron-down"></span></button>
+					<button ng-click="deleteFormField(field)" class="btn btn-danger" data-toggle="tooltip" data-placement="left" title="Feld löschen"><span class="glyphicon glyphicon-trash"></span></button>
 				</div>
 			</td>
 			<td ng-show="field.isSelected">
@@ -44,7 +44,7 @@
 													<input class="form-control" type="text" ng-model="field.new_option" placeholder="Bitte Option eingeben">
 												</td>
 												<td>
-													<button class="btn btn-default" ng-click="addOption(field)">Hinzufügen</button>
+													<button ng-disabled="!(field.new_option.length > 0)" class="btn btn-default" ng-click="addOption(field)">Hinzufügen</button>
 												</td>
 											</tr>
 										</tbody>
@@ -61,7 +61,7 @@
 							</tr>
 							<tr>
 								<td></td>
-								<td><button ng-disabled="field_form.$invalid || !field_form.$dirty" class="btn btn-success pull-right" ng-click="saveField(field)"><span class="glyphicon glyphicon-save"></span></button></td>
+								<td><button ng-disabled="field_form.$invalid || !field_form.$dirty" class="btn btn-success pull-right" ng-click="saveField(field)" data-toggle="tooltip" data-placement="left" title="Feld speichern"><span class="glyphicon glyphicon-save"></span></button></td>
 							</tr>
 						</tbody>
 					</table>
@@ -70,7 +70,7 @@
 		</tr>
 		<tr>
 			<td></td>
-			<td><button class="btn btn-default pull-right" ng-click="newField()"><span class="glyphicon glyphicon-plus"></span></button></td>
+			<td><button class="btn btn-default pull-right" ng-click="newField()" data-toggle="tooltip" data-placement="left" title="Neues Feld hinzufügen"><span class="glyphicon glyphicon-plus"></span></button></td>
 			<td></td>
 		</tr>
 	</tbody>
