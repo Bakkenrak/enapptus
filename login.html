@@ -12,11 +12,10 @@
 		<div class="col-md-6 col-md-offset-3">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title">{{register ? 'Registrierung' : 'Login'}}</h3>
+					<h3 class="panel-title">Login</h3>
 				</div>
 				<div class="panel-body">
-					<div ng-hide="registration_success">
-					<form name="loginForm" ng-hide="register">
+					<form name="loginForm">
 						<div class="form-group">
 							<input class="form-control" type="text" placeholder="Bitte Benutzername eingeben" ng-model="user.member" required>
 						</div>
@@ -24,28 +23,9 @@
 							<input class="form-control" type="password" placeholder ="Bitte Passwort eingeben" ng-model="user.password" required>
 						</div>
 					</form>
-					<form name="registerForm" ng-show="register">
-						<div class="form-group">
-							<input class="form-control" type="text" placeholder="Bitte Benutzername eingeben" ng-model="new_user.member" required>
-						</div>
-						<div class="form-group">
-							<input class="form-control" type="email" placeholder ="Bitte Email eingeben" ng-model="new_user.email" required>
-						</div>
-						<div class="form-group">
-							<input class="form-control" type="password" placeholder ="Bitte Passwort eingeben" ng-model="new_user.password" required>
-						</div>
-					</form>
-						<div class="form-group text-center">
-							<button ng-hide="register" ng-disabled="loginForm.$invalid" class="btn btn-default" ng-click="login(user)">Einloggen</button>
-							<button ng-show="register" ng-disabled="registerForm.$invalid" class="btn btn-default" ng-click="sendRegistration(new_user)">Absenden</button>
-							<button class="btn btn-default" ng-hide="register" ng-click="switchForm('login')">Registrieren</button>
-							<button class="btn btn-default" ng-show="register" ng-click="switchForm('register')">Abbrechen</button>
-						</div>
+					<div class="form-group text-center">
+						<button ng-disabled="loginForm.$invalid" class="btn btn-default" ng-click="login(user)">Einloggen</button>
 					</div>
-					<div ng-show="registration_success">
-						<p>Danke für deine Registrierung. Du wirst in Kürze freigeschaltet.</p>
-					</div>
-	
 				</div>
 			</div>
 		</div>

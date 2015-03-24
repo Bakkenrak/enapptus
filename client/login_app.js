@@ -2,7 +2,7 @@ var app = angular.module('loginApp', [
 	'toaster',
 	'angular-md5'
 	])
-.controller('loginCtrl', function($scope, $http, toaster, md5){
+.controller('loginCtrl', function($scope, $http, toaster, md5, $window	){
 	
 
 	/**************************************************************
@@ -30,7 +30,7 @@ var app = angular.module('loginApp', [
 					console.log(res);
 					toaster.pop('error', '', 'Fehler beim Loginvorgang.');
 				}else{
-					//store token
+					$window.location.href = 'index.html';
 				}
 			}).error(function(err, status){
 				console.log(toaster);
@@ -76,7 +76,6 @@ var app = angular.module('loginApp', [
 
 
 	***************************************************************/
-
 
 	$scope.user = {};
 	$scope.register = false;
