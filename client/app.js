@@ -1,5 +1,5 @@
 
-var app = angular.module('enactusApplication', [
+var app = angular.module('enactusPortal', [
 	'ngRoute',
 	'toaster',
 	'btford.modal'
@@ -28,18 +28,6 @@ app.config(['$routeProvider', function($routeProvider){
 			resolve : {
 				users : function(userApiFactory){
 					return userApiFactory.index();
-				}
-			}
-		})
-		.when('/currentform', {
-			templateUrl: './client/features/curr_form/curr_form.html',
-			controller: 'currFormCtrl',
-			data: {
-				admin_only: false
-			},
-			resolve : {
-				form_fields : function(formApiFactory){
-					return formApiFactory.index();
 				}
 			}
 		})

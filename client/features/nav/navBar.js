@@ -49,11 +49,6 @@ app.controller('navBarCtrl', function($scope, $rootScope, $location, myUser, use
 				admin_only: $route.routes['/formconfig'].data.admin_only 
 			},
 			{
-				name: 'Aktuelle Form',
-				route: '#/currentform',
-				admin_only: $route.routes['/currentform'].data.admin_only 
-			},
-			{
 				name: 'Usermanagement',
 				route: '#/usermanagement',
 				admin_only: $route.routes['/usermanagement'].data.admin_only 
