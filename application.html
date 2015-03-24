@@ -1,0 +1,116 @@
+<html ng-app="enactusApplication">
+<head>
+	<meta charset="utf-8">
+	<title>Enactus Bewerbung</title>
+	<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css"> -->
+	<link rel="stylesheet" href="client/style/bootstrap.css">
+	<link href='http://fonts.googleapis.com/css?family=Raleway:600,400,200' rel='stylesheet' type='text/css'>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/angularjs-toaster/0.4.9/toaster.min.css" rel="stylesheet" />
+	<link rel="stylesheet" href="client/style/custom_styles.css">
+	<style>
+		body{
+		}
+		.no-border td,.no-border tr{
+			border: none !important;
+		}
+		.header-container{
+			height:100px;
+			width:100%;
+			background-color: #4C4C4E;
+			color:white;
+		}
+		.header-title{
+			text-align: center;
+			margin-top:0;
+			padding-top: 30px;
+		}
+		.logo-container{
+			padding-top: 10px
+		}
+		.panel{
+		}
+	</style>
+</head>
+<body ng-controller="formCtrl">
+	<div class="header-container">
+		<div class="container">
+			<div class="col-md-10">
+				<h2 class="header-title pull-left">Bewerbung Enactus Münster</h2>
+			</div>
+			<div class="col-md-2 pull-right logo-container">
+				<a href="http://unimuenster.enactus.de/"><img src="./client/assets/logo_white.png" height="80px"></a>
+			</div>
+		</div>
+	</div>
+	<div class="container" style="margin-top:50px">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<form class="form" name="request_form">
+						<table class="table no-border">
+							<tbody>
+								<tr ng-repeat="field in form_fields | orderBy: 'rank'">
+									<td class="col-md-4 noselect">{{field.title}}</td>
+									<td>
+										<div ng-switch = "type_options[field.type].input_type">
+											<div ng-switch-when="text">
+												<input  type="text" placeholder="{{field.placeholder}}" class="form-control" ng-model="field.value" ng-required="field.required ? true: true" ng-disabled="isBlocked">
+											</div>
+											<div ng-switch-when="textarea">
+												<textarea type="text" placeholder="{{field.placeholder}}" class="form-control" ng-model="field.value" ng-required="field.required ? true: true"  ng-disabled="isBlocked" ></textarea>
+											</div>
+											<div ng-switch-when="radio">
+												<ul class="list-group">
+													<li ng-repeat="option in field.options" class="list-group-item">
+														<div class="input-group">
+															<span class="input-group-addon">
+																<input type="radio" ng-model="field.value" ng-value="option.value" ng-required="field.value === undefined" ng-disabled="isBlocked">
+															</span>
+															<p class="form-control noselect">{{option.value}}</p>
+														</div>
+													</li>
+												</ul>
+											</div>
+											<div ng-switch-when="select">  
+												<select class="form-control" ng-options="option.value for option in field.options" ng-model="form[field.title]" ng-required="field.required ? true: true" ng-disabled="isBlocked"></select>
+											</div>
+											<div ng-switch-when="file">  
+
+
+											</div>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<button ng-hide="isBlocked" ng-disabled="request_form.$invalid" class="btn btn-primary" ng-click="sendForm(form_fields)">Absenden</button>
+										<button ng-show="isBlocked" class="btn btn-primary" ng-click="isBlocked=false">Bearbeiten</button>
+
+									</td>
+									<td></td>
+								</tr>
+							</tbody>
+						</table>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- framework scripts -->
+	<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular-route.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular-animate.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="client/lib/angular-file-upload.js"></script>
+	<script type="text/javascript" src="client/lib/btford-modal.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angularjs-toaster/0.4.9/toaster.min.js"></script>
+
+
+	<!-- application scripts -->
+	<script type="text/javascript" src="client/application_app.js"></script>
+	<script type="text/javascript" src="client/factories/supported_type_factory.js"></script>
+	<script type="text/javascript" src="client/factories/form_api_factory.js"></script>
+</body>
+</html>

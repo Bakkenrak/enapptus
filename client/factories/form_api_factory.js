@@ -41,6 +41,19 @@ app.factory('formApiFactory', function($http){
 				headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
 			});
 		},
+		/**
+		 * function for sending a complete application
+		 * @param  {object} form complete application form
+		 * @return {object}      $http object with success and error for async calls
+		 */
+		send: function(form){
+			return $http({
+				method:'POST',
+				url: './api/application/save',
+				data: form,
+				headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
+			});
+		},
 
 		/**
 		 * function for deleting a form field
