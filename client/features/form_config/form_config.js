@@ -95,6 +95,18 @@ app.controller('formConfigCtrl', function($scope, formApiFactory, $q, index, toa
 			}
 		}
 	};
+
+	/**
+	 * scope function for removing a option from field options array. Sets form field to dirty for enabling save button
+	 * @param  {object} field form field object with options property
+	 * @param  {number} index   index for splice operation
+	 * @param {object} form form object which is set to dirty
+	 * @return {undefined}         
+	 */
+	$scope.removeOption = function(field, index, form){
+		form.$setDirty();
+		field.options.splice(index, 1);
+	};
 	
 	/**
 	 * scope function for adding a new option (e.g. dropdown option) to a form field object's options property

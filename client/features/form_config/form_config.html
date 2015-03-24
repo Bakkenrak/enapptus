@@ -37,7 +37,7 @@
 										<tbody>
 											<tr ng-repeat="option in field.options">
 												<td>{{option.value}}</td>
-												<td></td>
+												<td><button class="btn btn-xs btn-danger" ng-click="removeOption(field, $index, field_form)"><span class="glyphicon glyphicon-trash"></span></button></td>
 											</tr>
 											<tr>
 												<td>
