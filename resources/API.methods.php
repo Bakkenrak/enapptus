@@ -323,12 +323,18 @@
 		private function doLogin(){
 			$input = json_decode($this->file); //decode input JSON
 
+			// check if member name and password are provided
 			if(!isset($input->member)) 
 				return parent::_response(Array('error' => "Attribute member is missing"), 400);
 			if(!isset($input->password)) 
 				return parent::_response(Array('error' => "Attribute password is missing"), 400);
 
-			$authResult = $this->auth->login($input->member, $input->password, true);
+			if(!isset($input->remember)) //if no information whether to remember the login is provided, don't
+				$remember = false;
+			else
+				$remember = $input->remember;
+
+			$authResult = $this->auth->login($input->member, $input->password, $remember);
 
 			return parent::_response($authResult[0], $authResult[1]);
 		}

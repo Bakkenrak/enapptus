@@ -243,7 +243,7 @@ class Auth
 		$expiredate = strtotime($attempt->expiredate);
 		$currentdate = strtotime(date("Y-m-d H:i:s"));
 
-		if ($attempt->count == 5) {
+		if ($attempt->count == 10) {
 			if ($currentdate < $expiredate) {
 				return true;
 			}
