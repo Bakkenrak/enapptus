@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 24, 2015 at 03:28 
+-- Generation Time: Mar 26, 2015 at 08:04 
 -- Server version: 5.6.21
 -- PHP Version: 5.6.3
 
@@ -26,7 +26,6 @@ SET time_zone = "+00:00";
 -- Table structure for table `answer`
 --
 
-DROP TABLE IF EXISTS `answer`;
 CREATE TABLE IF NOT EXISTS `answer` (
   `aId` int(11) NOT NULL,
   `fId` int(11) NOT NULL,
@@ -39,11 +38,30 @@ CREATE TABLE IF NOT EXISTS `answer` (
 -- Table structure for table `application`
 --
 
-DROP TABLE IF EXISTS `application`;
 CREATE TABLE IF NOT EXISTS `application` (
 `aId` int(11) NOT NULL,
   `time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `application`
+--
+
+INSERT INTO `application` (`aId`, `time`) VALUES
+(1, '2015-03-13 16:51:47');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `attempts`
+--
+
+CREATE TABLE IF NOT EXISTS `attempts` (
+`id` int(11) NOT NULL,
+  `ip` varchar(39) NOT NULL,
+  `count` int(11) NOT NULL,
+  `expiredate` datetime NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -51,7 +69,6 @@ CREATE TABLE IF NOT EXISTS `application` (
 -- Table structure for table `field`
 --
 
-DROP TABLE IF EXISTS `field`;
 CREATE TABLE IF NOT EXISTS `field` (
 `fId` int(11) NOT NULL,
   `type` varchar(50) NOT NULL,
@@ -61,19 +78,39 @@ CREATE TABLE IF NOT EXISTS `field` (
   `is_required` tinyint(1) NOT NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `field`
+--
+
+INSERT INTO `field` (`fId`, `type`, `title`, `placeholder`, `rank`, `is_required`) VALUES
+(62, 'Textzeile', 'Vorname', 'Forename', 4, 0),
+(63, 'Textzeile', 'Nachname', 'Backname', 6, 0),
+(64, 'Radiobutton', 'Hochschule', '', 1, 0),
+(68, 'Dropdown', 'Lieblingsfarbe', '', 3, 0),
+(69, 'Textzeile', 'Alter', '12', 5, 0),
+(70, 'Textzeile', 'asdsad', 'Platzhalter', 5, 0);
+
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `member`
 --
 
-DROP TABLE IF EXISTS `member`;
 CREATE TABLE IF NOT EXISTS `member` (
 `mId` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
+  `salt` varchar(22) NOT NULL,
   `admin` tinyint(1) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `member`
+--
+
+INSERT INTO `member` (`mId`, `name`, `password`, `salt`, `admin`) VALUES
+(3, 'c', '$2y$10$FYf5E5jg8VqLemfXeMxDu.db/xzkyDYi.Rc8mMQIiuXs7.eiTuFD2', 'FYf5E5jg8VqLemfXeMxDuM', 1),
+(4, 'a', '$2y$10$ZL.FAhx0j1su3ZLBS9/75OIocCK4VnxAUX7.o4jafYevwUFQrFH4m', 'ZL.FAhx0j1su3ZLBS9/75P', 1);
 
 -- --------------------------------------------------------
 
@@ -81,12 +118,20 @@ CREATE TABLE IF NOT EXISTS `member` (
 -- Table structure for table `option`
 --
 
-DROP TABLE IF EXISTS `option`;
 CREATE TABLE IF NOT EXISTS `option` (
   `fId` int(11) NOT NULL,
   `type` varchar(50) NOT NULL,
   `value` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `option`
+--
+
+INSERT INTO `option` (`fId`, `type`, `value`) VALUES
+(64, 'option', 'WWU'),
+(64, 'option', 'FH'),
+(68, 'option', 'Schwarz');
 
 -- --------------------------------------------------------
 
@@ -94,7 +139,6 @@ CREATE TABLE IF NOT EXISTS `option` (
 -- Table structure for table `question`
 --
 
-DROP TABLE IF EXISTS `question`;
 CREATE TABLE IF NOT EXISTS `question` (
   `mId` int(11) NOT NULL,
   `aId` int(11) NOT NULL,
@@ -105,10 +149,48 @@ CREATE TABLE IF NOT EXISTS `question` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `sessions`
+--
+
+CREATE TABLE IF NOT EXISTS `sessions` (
+`id` int(11) NOT NULL,
+  `uid` int(11) NOT NULL,
+  `hash` varchar(40) NOT NULL,
+  `expiredate` datetime NOT NULL,
+  `ip` varchar(39) NOT NULL,
+  `agent` varchar(200) NOT NULL,
+  `cookie_crc` varchar(40) NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE IF NOT EXISTS `users` (
+  `id` int(11) NOT NULL,
+  `username` varchar(30) DEFAULT NULL,
+  `password` varchar(60) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `salt` varchar(22) DEFAULT NULL,
+  `isactive` tinyint(1) NOT NULL DEFAULT '0',
+  `dt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `username`, `password`, `email`, `salt`, `isactive`, `dt`) VALUES
+(1, 'christian', '$2y$10$E69jNqeoIj1UY2gzk466XOuVibYToIAlMCFePIYEzJMEed6RXmTcC', 'c@h.de', 'E69jNqeoIj1UY2gzk466Xb', 1, '2015-03-24 16:19:35');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `vote`
 --
 
-DROP TABLE IF EXISTS `vote`;
 CREATE TABLE IF NOT EXISTS `vote` (
   `mid` int(11) NOT NULL,
   `aId` int(11) NOT NULL,
@@ -130,6 +212,12 @@ ALTER TABLE `answer`
 --
 ALTER TABLE `application`
  ADD PRIMARY KEY (`aId`);
+
+--
+-- Indexes for table `attempts`
+--
+ALTER TABLE `attempts`
+ ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `field`
@@ -156,6 +244,18 @@ ALTER TABLE `question`
  ADD KEY `aId` (`aId`), ADD KEY `mId` (`mId`);
 
 --
+-- Indexes for table `sessions`
+--
+ALTER TABLE `sessions`
+ ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+ ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `vote`
 --
 ALTER TABLE `vote`
@@ -171,6 +271,11 @@ ALTER TABLE `vote`
 ALTER TABLE `application`
 MODIFY `aId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 --
+-- AUTO_INCREMENT for table `attempts`
+--
+ALTER TABLE `attempts`
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=5;
+--
 -- AUTO_INCREMENT for table `field`
 --
 ALTER TABLE `field`
@@ -179,7 +284,12 @@ MODIFY `fId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=71;
 -- AUTO_INCREMENT for table `member`
 --
 ALTER TABLE `member`
-MODIFY `mId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
+MODIFY `mId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=5;
+--
+-- AUTO_INCREMENT for table `sessions`
+--
+ALTER TABLE `sessions`
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=16;
 --
 -- Constraints for dumped tables
 --
