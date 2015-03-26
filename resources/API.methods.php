@@ -330,14 +330,14 @@
 
 			$authResult = $this->auth->login($input->member, $input->password, true);
 
-			return parent::_response($authResult);
+			return parent::_response($authResult[0], $authResult[1]);
 		}
 
 		private function doLogout(){
 			if($this->auth->logout($_COOKIE[$this->auth->getCookieName()]))
 				return parent::_response(Array('info' => 'Logged out successfully.'));
 			else
-				return parent::_response(Array('error' => 'Logout failed.'));
+				return parent::_response(Array('error' => 'Logout failed.'), 500);
 		}
 
 

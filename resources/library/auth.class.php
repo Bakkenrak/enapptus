@@ -48,45 +48,32 @@ class Auth
 
 	public function login($username, $password, $remember = 0)
 	{
-		$return['error'] = 1;
-
 		if ($this->isBlocked()) {
-			$return['message'] = "user_blocked";
-
-			return $return;
+			return Array(Array('error' => "Too many failed login attempts. Wait half an hour."), 401);
 		}
 
 		$member = ORM::for_table('member')->where('name', $username)->use_id_column('mId')->find_one();
 		if(!$member) {
 			$this->addAttempt();
 
-			$return['message'] = "username_password_incorrect";
-			return $return;
+			return Array(Array('error' => "Username or password incorrect."), 401);
 		}
 		
 		if (!password_verify($password, $member->password)) {
 			$this->addAttempt();
 
-			$return['message'] = "username_password_incorrect";
-			return $return;
+			return Array(Array('error' => "Username or password incorrect."), 401);
 		}
 
 		$sessiondata = $this->addSession($member, $remember);
 
 		if($sessiondata == false) {
-			$return['message'] = "system_error";
-			return $return;
+			return Array(Array('error' => "Failed to create session."), 401);
 		}
 
 		setcookie($this->cookie_name, $sessiondata['hash'], $sessiondata['expiretime'], $this->cookie_path, $this->cookie_domain, $this->cookie_secure, $this->cookie_http);
-		
-		$return['error'] = 0;
-		$return['message'] = "logged_in";
 
-		$return['hash'] = $sessiondata['hash'];
-		$return['expire'] = $sessiondata['expiretime'];
-
-		return $return;
+		return Array(Array('info' => "Logged in successfully.", 'hash' => $sessiondata['hash']), 200);
 	}
 
 	/*
