@@ -28,7 +28,7 @@ var app = angular.module('loginApp', [
 					console.log(res);
 					toaster.pop('error', '', 'Fehler beim Loginvorgang.');
 				}else{
-					//$window.location.href = 'index.html';
+					$window.location.href = 'index.html';
 				}
 			}).error(function(err, status){
 				console.log(toaster);
