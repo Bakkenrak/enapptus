@@ -43,6 +43,10 @@
 		        }
 	    }
 
+	    protected function logout(){
+		    return $this->doLogout();
+	    }
+
 	    /**
 	     * Holds functionality regarding form fields administration
 	     * Calls to api/form/
@@ -327,6 +331,13 @@
 			$authResult = $this->auth->login($input->member, $input->password, true);
 
 			return parent::_response($authResult);
+		}
+
+		private function doLogout(){
+			if($this->auth->logout($_COOKIE[$this->auth->getCookieName()]))
+				return parent::_response(Array('info' => 'Logged out successfully.'));
+			else
+				return parent::_response(Array('error' => 'Logout failed.'));
 		}
 
 

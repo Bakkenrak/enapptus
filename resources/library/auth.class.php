@@ -166,7 +166,7 @@ class Auth
 
 	private function deleteSession($hash)
 	{
-		return ORM::for_table('sessions')->where('hash', $hash)->delete();
+		return ORM::for_table('sessions')->where('hash', $hash)->delete_many();
 	}
 
 	/*
