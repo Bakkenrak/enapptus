@@ -1,21 +1,29 @@
 <?php
 	require_once 'API.class.php';
+	// https://github.com/j4mie/idiorm
 	require_once "library\idiorm.php";
 	require_once "config.php";
+	// https://github.com/PHPAuth/PHPAuth
+	include("library\auth.class.php");
 
 	class MyAPI extends API
 	{
 	    protected $User;
 
+		protected $auth;
+
 	    public function __construct($request, $origin) {
 	        parent::__construct($request);
+
+			$this->auth = new Auth();
 
 	        // Authentication
 	        if(!($this->endpoint == 'login') &&
 	        	!($this->method == 'GET' && $this->endpoint == 'form') &&
 	        	!($this->method == 'POST' && $this->endpoint == 'application')){
-
-	        	throw new Exception('Authentication required', 401);
+				if(!isset($_COOKIE[$this->auth->getCookieName()]) || !$this->auth->checkSession($_COOKIE[$this->auth->getCookieName()])) {
+				    throw new Exception('Authentication required', 401);
+				}
 	        }
 	        
 	    }
@@ -316,11 +324,9 @@
 			if(!isset($input->password)) 
 				return parent::_response(Array('error' => "Attribute password is missing"), 400);
 
-			$member = ORM::for_table('member')->where('name', $input->member)->find_one();
-			if(!$member || $member->password != $input->password)
-				return parent::_response(Array('error' => 'Wrong member name or password'), 401);
+			$authResult = $this->auth->login($input->member, $input->password, true);
 
-			return parent::_response('toooooookkkeeeeeeeenn');
+			return parent::_response($authResult);
 		}
 
 
@@ -383,7 +389,7 @@
 			$field->type = $input->type;
 			$field->placeholder = $input->placeholder;
 			$field->rank = $input->rank;
-			$field->is_required = $input->$is_required;
+			$field->is_required = $input->is_required;
 			$field->save();
 
 			//remove old options
@@ -462,9 +468,10 @@
 
 			$member->name = $input->name;
 
-			if(isset($input->password) && $input->password != "")  //when new password is defined, set it
-				$member->password = $input->password;
-			else //no password defined
+			if(isset($input->password) && $input->password != ""){  //when new password is defined, set it
+				$member->salt = substr(strtr(base64_encode(mcrypt_create_iv(22, MCRYPT_DEV_URANDOM)), '+', '.'), 0, 22);
+				$member->password = password_hash($input->password, PASSWORD_BCRYPT, ['salt' => $member->salt, 'cost' => 10]);
+			} else //no password defined
 				if($input->mId == 0 || $input->mId == "") //if customer is new -> password is required
 					return parent::_response(Array('error' => 'A password must be provided when a new member is created.'), 400);
 			
@@ -474,7 +481,8 @@
 			$member->save();
 
 			$output = $member->as_array();
-			unset($output['password']); //remove id field as it should not be given out from the server
+			unset($output['password']); //remove password field as it should not be given out from the server
+			unset($output['salt']);
 			return parent::_response($output);
 		}
 
