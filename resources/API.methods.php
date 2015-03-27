@@ -34,7 +34,7 @@
 	    }
 
 	    protected function logout() {
-	    	$this->auth->authenticate(); //check if caller is authorized to use this method
+	    	//$this->auth->authenticate(); //check if caller is authorized to use this method
 		    return $this->doLogout();
 	    }
 

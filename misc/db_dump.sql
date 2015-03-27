@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 27, 2015 at 01:51 
+-- Generation Time: Mar 27, 2015 at 02:21 
 -- Server version: 5.6.21
 -- PHP Version: 5.6.3
 
@@ -41,7 +41,9 @@ CREATE TABLE IF NOT EXISTS `answer` (
 
 INSERT INTO `answer` (`aId`, `fId`, `value`) VALUES
 (3, 62, 'jooooooooo'),
-(3, 63, 'neeeeeee');
+(3, 63, 'neeeeeee'),
+(4, 63, 'jooooooooo'),
+(4, 64, 'neeeeeee');
 
 -- --------------------------------------------------------
 
@@ -53,14 +55,15 @@ DROP TABLE IF EXISTS `application`;
 CREATE TABLE IF NOT EXISTS `application` (
 `aId` int(11) NOT NULL,
   `time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `application`
 --
 
 INSERT INTO `application` (`aId`, `time`) VALUES
-(3, '2015-03-27 12:53:52');
+(3, '2015-03-27 12:53:52'),
+(4, '2015-03-27 14:05:31');
 
 -- --------------------------------------------------------
 
@@ -186,39 +189,7 @@ CREATE TABLE IF NOT EXISTS `sessions` (
   `ip` varchar(39) NOT NULL,
   `agent` varchar(200) NOT NULL,
   `cookie_crc` varchar(40) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `sessions`
---
-
-INSERT INTO `sessions` (`id`, `uid`, `hash`, `expiredate`, `ip`, `agent`, `cookie_crc`) VALUES
-(23, 5, '744748e62e9e918b966300b4437698764014e57d', '2015-03-27 13:13:42', '::1', 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36', 'abfec8e7d039483040df2dd6f07c1f0ffbbd7c44'),
-(33, 4, '592fefe4288e3e91850379e85544a033d25a16ca', '2015-03-27 14:10:49', '::1', 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36', 'd5de9b39a77489fc92536b77ae57dae810bc1b5d');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `users`
---
-
-DROP TABLE IF EXISTS `users`;
-CREATE TABLE IF NOT EXISTS `users` (
-  `id` int(11) NOT NULL,
-  `username` varchar(30) DEFAULT NULL,
-  `password` varchar(60) DEFAULT NULL,
-  `email` varchar(100) DEFAULT NULL,
-  `salt` varchar(22) DEFAULT NULL,
-  `isactive` tinyint(1) NOT NULL DEFAULT '0',
-  `dt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `users`
---
-
-INSERT INTO `users` (`id`, `username`, `password`, `email`, `salt`, `isactive`, `dt`) VALUES
-(1, 'christian', '$2y$10$E69jNqeoIj1UY2gzk466XOuVibYToIAlMCFePIYEzJMEed6RXmTcC', 'c@h.de', 'E69jNqeoIj1UY2gzk466Xb', 1, '2015-03-24 16:19:35');
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -238,7 +209,9 @@ CREATE TABLE IF NOT EXISTS `vote` (
 --
 
 INSERT INTO `vote` (`mid`, `aId`, `value`) VALUES
-(3, 3, 'con');
+(4, 3, 'pro'),
+(3, 4, 'pro'),
+(3, 3, 'pro');
 
 --
 -- Indexes for dumped tables
@@ -293,12 +266,6 @@ ALTER TABLE `sessions`
  ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `users`
---
-ALTER TABLE `users`
- ADD PRIMARY KEY (`id`);
-
---
 -- Indexes for table `vote`
 --
 ALTER TABLE `vote`
@@ -312,7 +279,7 @@ ALTER TABLE `vote`
 -- AUTO_INCREMENT for table `application`
 --
 ALTER TABLE `application`
-MODIFY `aId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=4;
+MODIFY `aId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT for table `attempts`
 --
@@ -337,7 +304,7 @@ MODIFY `qId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
 -- AUTO_INCREMENT for table `sessions`
 --
 ALTER TABLE `sessions`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=34;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=37;
 --
 -- Constraints for dumped tables
 --
