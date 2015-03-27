@@ -1,0 +1,7 @@
+{
+    "aId": 3,
+    "mId": 4,
+    "value": "pro" //enum: "pro", "con" oder "neutral"
+}
+
+//votes können nicht gelöscht werden, nur überschrieben

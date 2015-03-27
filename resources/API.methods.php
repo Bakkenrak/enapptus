@@ -240,13 +240,9 @@
 
 					return $this->getVote();
 
-				} elseif($this->method == 'DELETE') { //delete vote for given ids
-
-					return $this->deleteVote();
-
 				} else { // wrong method
 
-					return parent::_response(Array('error' => 'Only accepts GET or DELETE requests.'), 403);
+					return parent::_response(Array('error' => 'Only accepts GET requests.'), 403);
 
 				}
 
@@ -304,27 +300,27 @@
 			} elseif(isset($this->args[0]) && is_numeric($this->args[0]) && isset($this->args[1]) && is_numeric($this->args[1])) { // call to api/question/{mid}/{aId}
 
 				if($mId != $this->args[0])
-					return parent::_response(Array('error' => "Not allowed to retrieve or delete question of another member"), 401);
+					return parent::_response(Array('error' => "Not allowed to retrieve question of another member"), 401);
 
 				if($this->method == 'GET') { //return vote for given ids
 
-					return $this->getQuestion();
-
-				} elseif($this->method == 'DELETE') { //delete vote for given ids
-
-					return $this->deleteQuestion();
+					return $this->getQuestionsByMemberAndApplication();
 
 				} else { // wrong method
 
-					return parent::_response(Array('error' => 'Only accepts GET or DELETE requests.'), 403);
+					return parent::_response(Array('error' => 'Only accepts GET requests.'), 403);
 
 				}
 
-			} elseif(isset($this->args[0]) && is_numeric($this->args[0])) { // call to api/question/{aid}
+			} elseif(isset($this->args[0]) && is_numeric($this->args[0])) { 
 
-				if($this->method == 'GET') { //return votes for member
+				if($this->method == 'GET') { // call to api/question/{aid} 
+					//return votes for member
+					return $this->getQuestionsByApplication($mId);
 
-					return $this->getQuestionsByApplication();
+				} elseif($this->method == 'DELETE') {  // call to api/question/{qid} 
+					//delete vote for given id
+					return $this->deleteQuestion($mId);
 
 				} else { // wrong method
 
@@ -333,9 +329,9 @@
 				}
 
 			} else { //call to any other domain: api/vote/*
-				if ($this->method == 'GET') { // return all votes
+				if ($this->method == 'GET') { // return all votes grouped by application and vote value
 		        	
-					return $this->getQuestions();
+					return $this->getQuestions($mId);
 
 		        } 
 		        else {
@@ -475,7 +471,7 @@
         	$members = ORM::for_table('member')->select_many('mId', 'name', 'admin')->find_array();
 
         	if(!$admin){
-        		foreach ($member as $key => $value) {
+        		foreach ($members as $key => $value) {
         			unset($members[$key]['admin']);
         		}
         	}
@@ -578,7 +574,7 @@
 			if(!isset($input->aId))
 				return parent::_response(Array('error' => "Attribute aId is missing."), 400);
 
-			if(!is_array($input->answers)) //if input is no array
+			if(!isset($input->answers) || !is_array($input->answers)) //if input is no array
         		return parent::_response(Array('error' => "Expecting an array attribute 'answers' with answer objects."), 400);
 
         	$application = ORM::for_table('application')->use_id_column('aId')->find_one($input->aId); //try to find by id
@@ -633,7 +629,7 @@
 		}
 
 		private function getVotes(){
-			$votes = ORM::for_table('vote')->select_many('aId', 'value')->find_array();
+			$votes = ORM::for_table('vote')->select_many('aId', 'value')->select_expr('COUNT(*)', 'count')->group_by('aId')->group_by('value')->find_array();
 
 			return parent::_response($votes);
 		}
@@ -649,7 +645,7 @@
 			if(!isset($input->value)) 
 				return parent::_response(Array('error' => "Attribute value is missing"), 400);
 
-			if($authMId != $member->mId)
+			if($authMId != $input->mId)
 				return parent::_response(Array('error' => "Not allowed to save votes for other members"), 401);
 
 			if(!ORM::for_table('member')->where('mId', $input->mId)->find_one())
@@ -670,15 +666,13 @@
 
 	// Questions --------------------------------------------------------
 
-		private function getQuestion(){
-			$question = ORM::for_table('question')->where(Array('mId' => $this->args[0], 'aId' => $this->args[1]))->find_one();
-			if(!$question)
-				return parent::_response(Array('error' => 'question not found'), 403);
+		private function getQuestionsByMemberAndApplication(){
+			$questions = ORM::for_table('question')->where(Array('mId' => $this->args[0], 'aId' => $this->args[1]))->find_array();
 
-			return parent::_response($question->as_array());
+			return parent::_response($questions);
 		}
 
-		private function getQuestionsByApplication() {
+		private function getQuestionsByApplication($authMId) {
 			$questions = ORM::for_table('question')->where('aId', $this->args[0])->find_array();
 
 			foreach ($questions as $key => $question) { //remove member information from questions that are not by the requesting member
@@ -704,6 +698,8 @@
 			$input = json_decode($this->file); //decode input json
 
 			//check for missing properties
+			if(!isset($input->qId)) 
+				return parent::_response(Array('error' => "Attribute qId is missing"), 400);
 			if(!isset($input->mId)) 
 				return parent::_response(Array('error' => "Attribute mId is missing"), 400);
 			if(!isset($input->aId)) 
@@ -719,15 +715,35 @@
 			if(!ORM::for_table('application')->where('aId', $input->aId)->find_one())
 				return parent::_response(Array('error' => 'Application not found'), 403);
 
-			ORM::for_table('question')->where(Array('mId' => $input->mId, 'aId' => $input->aId))->delete_many();
+			$question = ORM::for_table('question')->use_id_column('qId')->find_one($input->qId);
+			if(!$question)
+				$question = ORM::for_table('question')->create();
 
-			$question = ORM::for_table('question')->create();
+			if($authMId != $question->mId)
+				return parent::_response(Array('error' => "Not allowed to edit questions of other members"), 401);
+
 			$question->mId = $input->mId;
 			$question->aId = $input->aId;
 			$question->value = $input->value;
 			$question->save();
 
+			$question->qId = $question->id();
+
 			return parent::_response($question->as_array());
+		}
+
+		private function deleteQuestion($authMId) {
+			$question = ORM::for_table('question')->use_id_column('qId')->find_one($this->args[0]);
+
+			if(!$question) //when no qestion with this id in db
+				return parent::_response(Array('error' => 'Question not found'), 403);
+
+			if($authMId != $question->mId)
+				return parent::_response(Array('error' => "Not allowed to delete questions for other members"), 401);
+
+			$id = $question->qId;
+			$question->delete();
+			return parent::_response(Array('information' => 'Question with ID ' . $id . ' was deleted.'));
 		}
 	}
 ?>

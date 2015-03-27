@@ -1,0 +1,6 @@
+{
+    "qId" : 1,	//0 wenn neu
+    "aId": 3,
+    "mId": 4,
+    "value": "wo jetzt?"
+}

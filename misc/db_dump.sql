@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 27, 2015 at 12:32 
+-- Generation Time: Mar 27, 2015 at 01:51 
 -- Server version: 5.6.21
 -- PHP Version: 5.6.3
 
@@ -35,6 +35,14 @@ CREATE TABLE IF NOT EXISTS `answer` (
   `value` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `answer`
+--
+
+INSERT INTO `answer` (`aId`, `fId`, `value`) VALUES
+(3, 62, 'jooooooooo'),
+(3, 63, 'neeeeeee');
+
 -- --------------------------------------------------------
 
 --
@@ -45,14 +53,14 @@ DROP TABLE IF EXISTS `application`;
 CREATE TABLE IF NOT EXISTS `application` (
 `aId` int(11) NOT NULL,
   `time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `application`
 --
 
 INSERT INTO `application` (`aId`, `time`) VALUES
-(1, '2015-03-13 16:51:47');
+(3, '2015-03-27 12:53:52');
 
 -- --------------------------------------------------------
 
@@ -109,15 +117,15 @@ CREATE TABLE IF NOT EXISTS `member` (
   `password` varchar(255) NOT NULL,
   `salt` varchar(22) NOT NULL,
   `admin` tinyint(1) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `member`
 --
 
 INSERT INTO `member` (`mId`, `name`, `password`, `salt`, `admin`) VALUES
-(3, 'c', '$2y$10$FYf5E5jg8VqLemfXeMxDu.db/xzkyDYi.Rc8mMQIiuXs7.eiTuFD2', 'FYf5E5jg8VqLemfXeMxDuM', 1),
-(4, 'a', '$2y$10$ZL.FAhx0j1su3ZLBS9/75OIocCK4VnxAUX7.o4jafYevwUFQrFH4m', 'ZL.FAhx0j1su3ZLBS9/75P', 1);
+(3, 'c', '$2y$10$Pi.nCjxa/iuIGcFh9xSQYO1TXUV.tK1BvASrfZdmOIwgTsFLQnVia', 'Pi.nCjxa/iuIGcFh9xSQYO', 1),
+(4, 'a', '$2y$10$ZL.FAhx0j1su3ZLBS9/75OIocCK4VnxAUX7.o4jafYevwUFQrFH4m', 'ZL.FAhx0j1su3ZLBS9/75P', 0);
 
 -- --------------------------------------------------------
 
@@ -149,11 +157,19 @@ INSERT INTO `option` (`fId`, `type`, `value`) VALUES
 
 DROP TABLE IF EXISTS `question`;
 CREATE TABLE IF NOT EXISTS `question` (
+`qId` int(11) NOT NULL,
   `mId` int(11) NOT NULL,
   `aId` int(11) NOT NULL,
   `value` text NOT NULL,
   `time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `question`
+--
+
+INSERT INTO `question` (`qId`, `mId`, `aId`, `value`, `time`) VALUES
+(2, 3, 3, 'wo denn jetzt', '2015-03-27 13:42:00');
 
 -- --------------------------------------------------------
 
@@ -170,14 +186,15 @@ CREATE TABLE IF NOT EXISTS `sessions` (
   `ip` varchar(39) NOT NULL,
   `agent` varchar(200) NOT NULL,
   `cookie_crc` varchar(40) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `sessions`
 --
 
 INSERT INTO `sessions` (`id`, `uid`, `hash`, `expiredate`, `ip`, `agent`, `cookie_crc`) VALUES
-(19, 4, 'c10af0730bf96b09cccadfe546ec19acfb50bba7', '2015-03-27 12:58:40', '::1', 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36', '1396a4cc58e975454a374f04968fec16b31199c9');
+(23, 5, '744748e62e9e918b966300b4437698764014e57d', '2015-03-27 13:13:42', '::1', 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36', 'abfec8e7d039483040df2dd6f07c1f0ffbbd7c44'),
+(33, 4, '592fefe4288e3e91850379e85544a033d25a16ca', '2015-03-27 14:10:49', '::1', 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36', 'd5de9b39a77489fc92536b77ae57dae810bc1b5d');
 
 -- --------------------------------------------------------
 
@@ -215,6 +232,13 @@ CREATE TABLE IF NOT EXISTS `vote` (
   `aId` int(11) NOT NULL,
   `value` enum('pro','con','neutral') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `vote`
+--
+
+INSERT INTO `vote` (`mid`, `aId`, `value`) VALUES
+(3, 3, 'con');
 
 --
 -- Indexes for dumped tables
@@ -260,7 +284,7 @@ ALTER TABLE `option`
 -- Indexes for table `question`
 --
 ALTER TABLE `question`
- ADD KEY `aId` (`aId`), ADD KEY `mId` (`mId`);
+ ADD PRIMARY KEY (`qId`), ADD KEY `aId` (`aId`), ADD KEY `mId` (`mId`);
 
 --
 -- Indexes for table `sessions`
@@ -288,7 +312,7 @@ ALTER TABLE `vote`
 -- AUTO_INCREMENT for table `application`
 --
 ALTER TABLE `application`
-MODIFY `aId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
+MODIFY `aId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=4;
 --
 -- AUTO_INCREMENT for table `attempts`
 --
@@ -303,12 +327,17 @@ MODIFY `fId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=72;
 -- AUTO_INCREMENT for table `member`
 --
 ALTER TABLE `member`
-MODIFY `mId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=5;
+MODIFY `mId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=6;
+--
+-- AUTO_INCREMENT for table `question`
+--
+ALTER TABLE `question`
+MODIFY `qId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `sessions`
 --
 ALTER TABLE `sessions`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=20;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=34;
 --
 -- Constraints for dumped tables
 --
