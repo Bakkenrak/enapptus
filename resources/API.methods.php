@@ -15,22 +15,12 @@
 	    public function __construct($request, $origin) {
 	        parent::__construct($request);
 
-			$this->auth = new Auth();
-
-	        // Authentication
-	        if(!($this->endpoint == 'login') &&
-	        	!($this->method == 'GET' && $this->endpoint == 'form') &&
-	        	!($this->method == 'POST' && $this->endpoint == 'application')){
-				if(!isset($_COOKIE[$this->auth->getCookieName()]) || !$this->auth->checkSession($_COOKIE[$this->auth->getCookieName()])) {
-				    throw new Exception('Authentication required', 401);
-				}
-	        }
-	        
+			$this->auth = new Auth();	        
 	    }
 
 
 
-	    protected function login(){
+	    protected function login() {
 	    	if ($this->method == 'POST') { //returns form data on GET requests
 
 		        	return $this->doLogin();
@@ -43,7 +33,8 @@
 		        }
 	    }
 
-	    protected function logout(){
+	    protected function logout() {
+	    	$this->auth->authenticate(); //check if caller is authorized to use this method
 		    return $this->doLogout();
 	    }
 
@@ -53,6 +44,8 @@
 	     */
 	     protected function form() {
 	     	if($this->verb == 'save'){ //calls to api/form/save
+
+	     		$this->auth->authenticate(true); //check if caller is authorized to use this method
 
 		        if ($this->method == 'POST') { //requires JSON data to be POSTed
 
@@ -67,11 +60,13 @@
 
 		    } elseif(isset($this->args[0]) && is_numeric($this->args[0])) { // call to api/form/{id}
 
-				if($this->method == 'GET') { //return member with given id
+				if($this->method == 'GET') { //return form field with given id
 
 					return $this->getFormField();
 
 				} elseif($this->method == 'DELETE') { //delete member with given id
+
+					$this->auth->authenticate(true); //check if caller is authorized to use this method
 
 					return $this->deleteFormField();
 
@@ -103,6 +98,8 @@
 		protected function member() {
 			if($this->verb == 'save') { //call to api/member/save
 
+				$this->auth->authenticate(true); //check if caller is authorized to use this method
+
 				if($this->method == 'POST') {
 
 					return $this->saveMember();
@@ -117,9 +114,17 @@
 
 				if($this->method == 'GET') { //return member with given id
 
-					return $this->getMember();
+					try{
+						$this->auth->authenticate(true);
+					} catch (Exception $e) {
+						return $this->getMember();
+					}
+
+					return $this->getMember(true);
 
 				} elseif($this->method == 'DELETE') { //delete member with given id
+
+					$this->auth->authenticate(true); //check if caller is authorized to use this method
 
 					return $this->deleteMember();
 
@@ -132,7 +137,13 @@
 			} else { //call to any other domain: api/member/*
 				if ($this->method == 'GET') { // return all members
 		        	
-		        	return $this->getMembers();
+		        	try{
+						$this->auth->authenticate(true);
+					} catch (Exception $e) {
+						return $this->getMembers();
+					}
+
+		        	return $this->getMembers(true);
 
 		        } 
 		        else {
@@ -164,11 +175,15 @@
 
 			} elseif(isset($this->args[0]) && is_numeric($this->args[0])) { // call to api/application/{id}
 
+				$this->auth->authenticate(); //check if caller is authorized to use this method
+
 				if($this->method == 'GET') { //return member with given id
 
 					return $this->getApplication();
 
 				} elseif($this->method == 'DELETE') { //delete application with given id
+
+					$this->auth->authenticate(true); //check if caller is authorized to use this method
 
 					return $this->deleteApplication();
 
@@ -178,8 +193,11 @@
 
 				}
 			} else { //call to any other domain: api/member/*
+				
+				$this->auth->authenticate(); //check if caller is authorized to use this method
+				
 				if ($this->method == 'GET') { // return all applications
-		        	
+
 					return $this->getApplications();
 
 		        } 
@@ -198,11 +216,14 @@
 		*	Calls to api/member
 		*/
 		protected function vote() {
+
+			$mId = $this->auth->authenticate(); //check if caller is authorized to use this method
+
 			if($this->verb == 'save') { //call to api/vote/save
 
 				if($this->method == 'POST') {
 
-					return $this->saveVote();
+					return $this->saveVote($mId);
 
 				} else {
 
@@ -211,6 +232,9 @@
 				}
 
 			} elseif(isset($this->args[0]) && is_numeric($this->args[0]) && isset($this->args[1]) && is_numeric($this->args[1])) { // call to api/vote/{mid}/{aId}
+
+				if($mId != $this->args[0])
+					return parent::_response(Array('error' => "Not allowed to retrieve or delete vote of another member"), 401);
 
 				if($this->method == 'GET') { //return vote for given ids
 
@@ -227,6 +251,9 @@
 				}
 
 			} elseif(isset($this->args[0]) && is_numeric($this->args[0])) { // call to api/vote/{mid}
+
+				if($mId != $this->args[0])
+					return parent::_response(Array('error' => "Not allowed to retrieve votes of another member"), 401);
 
 				if($this->method == 'GET') { //return votes for member
 
@@ -259,11 +286,14 @@
 		*	Calls to api/member
 		*/
 		protected function question() {
+
+			$mId = $this->auth->authenticate(); //check if caller is authorized to use this method
+
 			if($this->verb == 'save') { //call to api/vote/save
 
 				if($this->method == 'POST') {
 
-					return $this->saveQuestion();
+					return $this->saveQuestion($mId);
 
 				} else {
 
@@ -271,7 +301,10 @@
 
 				}
 
-			} elseif(isset($this->args[0]) && is_numeric($this->args[0]) && isset($this->args[1]) && is_numeric($this->args[1])) { // call to api/vote/{mid}/{aId}
+			} elseif(isset($this->args[0]) && is_numeric($this->args[0]) && isset($this->args[1]) && is_numeric($this->args[1])) { // call to api/question/{mid}/{aId}
+
+				if($mId != $this->args[0])
+					return parent::_response(Array('error' => "Not allowed to retrieve or delete question of another member"), 401);
 
 				if($this->method == 'GET') { //return vote for given ids
 
@@ -287,7 +320,7 @@
 
 				}
 
-			} elseif(isset($this->args[0]) && is_numeric($this->args[0])) { // call to api/vote/{aid}
+			} elseif(isset($this->args[0]) && is_numeric($this->args[0])) { // call to api/question/{aid}
 
 				if($this->method == 'GET') { //return votes for member
 
@@ -437,19 +470,31 @@
 
 	// Members ---------------------------------------------------------------
 
-		private function getMembers() {
+		private function getMembers($admin = false) {
 			//fetch all, without password
         	$members = ORM::for_table('member')->select_many('mId', 'name', 'admin')->find_array();
+
+        	if(!$admin){
+        		foreach ($member as $key => $value) {
+        			unset($members[$key]['admin']);
+        		}
+        	}
+
             return parent::_response($members);
 		}
 
-		private function getMember(){
+		private function getMember($admin = false){
 			$member = $this->_retrieveMember();
 
 			if(!$member) //when no member with this id in db
 				return parent::_response(Array('error' => 'Member not found'), 403);
 
-			return parent::_response($member->as_array());
+			$member = $member->as_array();
+
+			if(!$admin)
+				unset($member['admin']);
+
+			return parent::_response($member);
 		}
 
 		private function deleteMember(){
@@ -588,12 +633,12 @@
 		}
 
 		private function getVotes(){
-			$votes = ORM::for_table('vote')->find_array();
+			$votes = ORM::for_table('vote')->select_many('aId', 'value')->find_array();
 
 			return parent::_response($votes);
 		}
 
-		private function saveVote() {
+		private function saveVote($authMId) {
 			$input = json_decode($this->file); //decode input json
 
 			//check for missing properties
@@ -603,6 +648,9 @@
 				return parent::_response(Array('error' => "Attribute aId is missing"), 400);
 			if(!isset($input->value)) 
 				return parent::_response(Array('error' => "Attribute value is missing"), 400);
+
+			if($authMId != $member->mId)
+				return parent::_response(Array('error' => "Not allowed to save votes for other members"), 401);
 
 			if(!ORM::for_table('member')->where('mId', $input->mId)->find_one())
 				return parent::_response(Array('error' => 'Member not found'), 403);
@@ -633,16 +681,26 @@
 		private function getQuestionsByApplication() {
 			$questions = ORM::for_table('question')->where('aId', $this->args[0])->find_array();
 
+			foreach ($questions as $key => $question) { //remove member information from questions that are not by the requesting member
+				if($question['mId']!=$authMId)
+					unset($questions[$key]['mId']);
+			}
+
 			return parent::_response($questions);
 		}
 
-		private function getQuestions(){
+		private function getQuestions($authMId){
 			$questions = ORM::for_table('question')->find_array();
 
+			foreach ($questions as $key => $question) { //remove member information from questions that are not by the requesting member
+				if($question['mId']!=$authMId)
+					unset($questions[$key]['mId']);
+			}
+
 			return parent::_response($questions);
 		}
 
-		private function saveQuestion() {
+		private function saveQuestion($authMId) {
 			$input = json_decode($this->file); //decode input json
 
 			//check for missing properties
@@ -652,6 +710,9 @@
 				return parent::_response(Array('error' => "Attribute aId is missing"), 400);
 			if(!isset($input->value)) 
 				return parent::_response(Array('error' => "Attribute value is missing"), 400);
+
+			if($authMId != $input->mId)
+				return parent::_response(Array('error' => "Not allowed to save questions for other members"), 401);
 
 			if(!ORM::for_table('member')->where('mId', $input->mId)->find_one())
 				return parent::_response(Array('error' => 'Member not found'), 403);

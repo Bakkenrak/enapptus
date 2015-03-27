@@ -73,7 +73,7 @@ class Auth
 
 		setcookie($this->cookie_name, $sessiondata['hash'], $sessiondata['expiretime'], $this->cookie_path, $this->cookie_domain, $this->cookie_secure, $this->cookie_http);
 
-		return Array(Array('info' => "Logged in successfully.", 'hash' => $sessiondata['hash']), 200);
+		return Array(Array('info' => "Logged in successfully.", 'hash' => $sessiondata['hash'], 'admin' => $member->admin), 200);
 	}
 
 	/*
@@ -156,6 +156,24 @@ class Auth
 		return ORM::for_table('sessions')->where('hash', $hash)->delete_many();
 	}
 
+	public function authenticate($admin = false) {
+		if(!isset($_COOKIE[$this->cookie_name])) {
+			throw new Exception('No session provided', 401);
+		} else {
+			$mId = $this->checkSession($_COOKIE[$this->cookie_name]);
+			if(!$mId) {
+				throw new Exception('Invalid session', 401);
+			}
+			if($admin){
+				$member = ORM::for_table('member')->use_id_column('mId')->find_one($mId);
+				if(!$member->admin){
+					throw new Exception('Member is no admin', 401);
+				}
+			}
+			return $mId;
+		}
+	}
+
 	/*
 	* Function to check if a session is valid
 	* @param string $hash
@@ -201,11 +219,11 @@ class Auth
 				return false;
 			}
 			
-			return $this->updateSessionIp($sid, $ip);
+			$this->updateSessionIp($sid, $ip);
 		}
 		
 		if ($db_cookie == sha1($hash . $this->site_key)) {
-			return true;
+			return $uid;
 		}
 		
 		return false;
