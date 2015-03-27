@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 26, 2015 at 08:04 
+-- Generation Time: Mar 27, 2015 at 12:32 
 -- Server version: 5.6.21
 -- PHP Version: 5.6.3
 
@@ -19,6 +19,8 @@ SET time_zone = "+00:00";
 --
 -- Database: `applications`
 --
+CREATE DATABASE IF NOT EXISTS `applications` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `applications`;
 
 -- --------------------------------------------------------
 
@@ -26,6 +28,7 @@ SET time_zone = "+00:00";
 -- Table structure for table `answer`
 --
 
+DROP TABLE IF EXISTS `answer`;
 CREATE TABLE IF NOT EXISTS `answer` (
   `aId` int(11) NOT NULL,
   `fId` int(11) NOT NULL,
@@ -38,6 +41,7 @@ CREATE TABLE IF NOT EXISTS `answer` (
 -- Table structure for table `application`
 --
 
+DROP TABLE IF EXISTS `application`;
 CREATE TABLE IF NOT EXISTS `application` (
 `aId` int(11) NOT NULL,
   `time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -56,12 +60,13 @@ INSERT INTO `application` (`aId`, `time`) VALUES
 -- Table structure for table `attempts`
 --
 
+DROP TABLE IF EXISTS `attempts`;
 CREATE TABLE IF NOT EXISTS `attempts` (
 `id` int(11) NOT NULL,
   `ip` varchar(39) NOT NULL,
   `count` int(11) NOT NULL,
   `expiredate` datetime NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -69,6 +74,7 @@ CREATE TABLE IF NOT EXISTS `attempts` (
 -- Table structure for table `field`
 --
 
+DROP TABLE IF EXISTS `field`;
 CREATE TABLE IF NOT EXISTS `field` (
 `fId` int(11) NOT NULL,
   `type` varchar(50) NOT NULL,
@@ -76,19 +82,19 @@ CREATE TABLE IF NOT EXISTS `field` (
   `placeholder` varchar(255) NOT NULL,
   `rank` int(11) NOT NULL,
   `is_required` tinyint(1) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=72 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `field`
 --
 
 INSERT INTO `field` (`fId`, `type`, `title`, `placeholder`, `rank`, `is_required`) VALUES
-(62, 'Textzeile', 'Vorname', 'Forename', 4, 0),
-(63, 'Textzeile', 'Nachname', 'Backname', 6, 0),
+(62, 'Textzeile', 'Vorname', 'Forename', 5, 0),
+(63, 'Textzeile', 'Nachname', 'Backname', 3, 0),
 (64, 'Radiobutton', 'Hochschule', '', 1, 0),
-(68, 'Dropdown', 'Lieblingsfarbe', '', 3, 0),
-(69, 'Textzeile', 'Alter', '12', 5, 0),
-(70, 'Textzeile', 'asdsad', 'Platzhalter', 5, 0);
+(68, 'Dropdown', 'Lieblingsfarbe', '', 4, 0),
+(69, 'Textzeile', 'Alter', '12', 6, 0),
+(71, 'Textzeile', 'Geburtsort', 'a', 6, 1);
 
 -- --------------------------------------------------------
 
@@ -96,6 +102,7 @@ INSERT INTO `field` (`fId`, `type`, `title`, `placeholder`, `rank`, `is_required
 -- Table structure for table `member`
 --
 
+DROP TABLE IF EXISTS `member`;
 CREATE TABLE IF NOT EXISTS `member` (
 `mId` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
@@ -118,6 +125,7 @@ INSERT INTO `member` (`mId`, `name`, `password`, `salt`, `admin`) VALUES
 -- Table structure for table `option`
 --
 
+DROP TABLE IF EXISTS `option`;
 CREATE TABLE IF NOT EXISTS `option` (
   `fId` int(11) NOT NULL,
   `type` varchar(50) NOT NULL,
@@ -139,6 +147,7 @@ INSERT INTO `option` (`fId`, `type`, `value`) VALUES
 -- Table structure for table `question`
 --
 
+DROP TABLE IF EXISTS `question`;
 CREATE TABLE IF NOT EXISTS `question` (
   `mId` int(11) NOT NULL,
   `aId` int(11) NOT NULL,
@@ -152,6 +161,7 @@ CREATE TABLE IF NOT EXISTS `question` (
 -- Table structure for table `sessions`
 --
 
+DROP TABLE IF EXISTS `sessions`;
 CREATE TABLE IF NOT EXISTS `sessions` (
 `id` int(11) NOT NULL,
   `uid` int(11) NOT NULL,
@@ -160,7 +170,14 @@ CREATE TABLE IF NOT EXISTS `sessions` (
   `ip` varchar(39) NOT NULL,
   `agent` varchar(200) NOT NULL,
   `cookie_crc` varchar(40) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `sessions`
+--
+
+INSERT INTO `sessions` (`id`, `uid`, `hash`, `expiredate`, `ip`, `agent`, `cookie_crc`) VALUES
+(19, 4, 'c10af0730bf96b09cccadfe546ec19acfb50bba7', '2015-03-27 12:58:40', '::1', 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36', '1396a4cc58e975454a374f04968fec16b31199c9');
 
 -- --------------------------------------------------------
 
@@ -168,6 +185,7 @@ CREATE TABLE IF NOT EXISTS `sessions` (
 -- Table structure for table `users`
 --
 
+DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) NOT NULL,
   `username` varchar(30) DEFAULT NULL,
@@ -191,6 +209,7 @@ INSERT INTO `users` (`id`, `username`, `password`, `email`, `salt`, `isactive`, 
 -- Table structure for table `vote`
 --
 
+DROP TABLE IF EXISTS `vote`;
 CREATE TABLE IF NOT EXISTS `vote` (
   `mid` int(11) NOT NULL,
   `aId` int(11) NOT NULL,
@@ -274,12 +293,12 @@ MODIFY `aId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 -- AUTO_INCREMENT for table `attempts`
 --
 ALTER TABLE `attempts`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=5;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `field`
 --
 ALTER TABLE `field`
-MODIFY `fId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=71;
+MODIFY `fId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=72;
 --
 -- AUTO_INCREMENT for table `member`
 --
@@ -289,7 +308,7 @@ MODIFY `mId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=5;
 -- AUTO_INCREMENT for table `sessions`
 --
 ALTER TABLE `sessions`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=16;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=20;
 --
 -- Constraints for dumped tables
 --
