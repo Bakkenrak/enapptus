@@ -78,4 +78,20 @@ var app = angular.module('loginApp', [
 	$scope.user = {};
 	$scope.register = false;
 	$scope.new_user = {};
+
+	$http({
+		method:'GET',
+		url: './api/member'
+	}).success(function(res, status){
+		if(status !== 200){
+			console.log(res);
+			toaster.pop('error', '', 'Fehler initialisieren der Mitgliederliste.');
+		}else{
+			$scope.members = res;
+		}
+	}).error(function(err, status){
+		console.log(toaster);
+		toaster.pop('error', '', 'Fehler beim Zugriff auf Server.');
+		console.log(err, status);
+	});
 });
