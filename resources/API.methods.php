@@ -538,6 +538,8 @@
 
 			$member->save();
 
+			$member->mId = $member->id();
+
 			$output = $member->as_array();
 			unset($output['password']); //remove password field as it should not be given out from the server
 			unset($output['salt']);
