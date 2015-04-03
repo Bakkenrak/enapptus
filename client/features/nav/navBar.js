@@ -1,4 +1,4 @@
-app.controller('navBarCtrl', function($scope, $rootScope, $location, myUser, userApiFactory, $route){
+app.controller('navBarCtrl', function($scope, $rootScope, $location, myUser, userApiFactory, $route, $http, $window){
 	
 	/**
 	 * function for finding number of inactive users for displaying in navbar. 
@@ -17,6 +17,21 @@ app.controller('navBarCtrl', function($scope, $rootScope, $location, myUser, use
 			$scope.numberInactive = count;
 		};
 	};
+
+	$scope.logout = function(){
+		$http({
+				method:'GET',
+				url: './api/logout'
+			}).success(function(res, status){
+				if(status !== 200){
+					toaster.pop('error', '', 'Fehler beim Logoutvorgang.');
+				}else{
+					$window.location.href = 'login.html';
+				}
+			}).error(function(err, status){
+				toaster.pop('error', '', 'Fehler beim Logoutvorgang.');
+			});
+	}
 
 
 

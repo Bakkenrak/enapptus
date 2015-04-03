@@ -85,7 +85,7 @@ var app = angular.module('loginApp', [
 	}).success(function(res, status){
 		if(status !== 200){
 			console.log(res);
-			toaster.pop('error', '', 'Fehler initialisieren der Mitgliederliste.');
+			toaster.pop('error', '', 'Fehler beim initialisieren der Mitgliederliste.');
 		}else{
 			$scope.members = res;
 		}
