@@ -1,20 +1,35 @@
 <div class="col-md-12">
 	<table class="table table-hover">
 		<thead>
-			<th class="col-md-4">Username</th>
-			<th class="col-md-4">Email</th>
+			<th class="col-md-3">Username</th>
+			<th class="col-md-2">Passwort</th>
 			<th class="col-md-1 text-center">Admin</th>
-			<th class="col-md-1	text-center">Aktiv</th>
 			<th class="col-md-2	text-center"></th>
 		</thead>
 		<tbody>
 			<tr ng-repeat="user in users">
-				<td>{{user.username}}</td>
-				<td>{{user.email}}</td>	
-				<td class="text-center"><input type="checkbox" ng-model="user.is_admin" ng-change="saveUser(user)"></td>
-				<td class="text-center"><input type="checkbox" ng-model="user.is_active" ng-change="saveUser(user)"></td>
-				<td class="text-center"><button ng-click="deleteUser(user)"class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-trash"></span></button></td>
+				<td ng-switch on="user.editMode">
+					<input type="text" ng-switch-when="true" ng-model="user.name" class="form-control" placeholder="Bitte Mitgliedsnamen eingeben." />
+					<p ng-switch-default>{{user.name}}</p>
+				</td>
+				<td ng-switch on="user.editMode">
+					<input type="password" ng-switch-when="true" ng-model="user.password" class="form-control" placeholder="Passwort ändern?" />
+				</td>
+				<td class="text-center"><input type="checkbox" ng-model="user.admin" ng-disabled="user.editMode !== true"></td>
+				<td class="text-center">
+					<button ng-click="deleteUser(user)" class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-trash"></span></button>
+					<button ng-click="user.editMode = true" ng-show="user.editMode !== true" class="btn btn-sm btn-info"><span class="glyphicon glyphicon-pencil"></span></button>
+					<button ng-click="saveUser(user)" ng-hide="user.editMode !== true" class="btn btn-sm btn-success"><span class="glyphicon glyphicon-floppy-saved"></span></button>
+					<button ng-click="user.editMode = false" ng-hide="user.editMode !== true" class="btn btn-sm btn-info"><span class="glyphicon glyphicon-floppy-remove"></span></button>
+				</td>
 			</tr>
 		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan="4" class="text-center">
+					<button class="btn btn-default" ng-click="newMember()" data-toggle="tooltip" data-placement="left" title="Neues Mitglied hinzufügen"><span class="glyphicon glyphicon-plus"></span></button>
+				</td>
+			</tr>
+		</tfoot>
 	</table>
 </div>

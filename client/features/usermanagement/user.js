@@ -8,6 +8,18 @@ app.controller('userManagementCtrl', function($scope, myModal, toaster, myUser, 
 
 	***************************************************************/
 
+	/**
+	 * workaround for parsing member's admin status from string number to boolean when loading from backend.
+	 * @param  {array} membersarray array containing member objects
+	 * @return {array}            array containing member objects
+	 */
+	var convertNumberStringToBoolean = function(membersarray){
+		angular.forEach(membersarray, function(elm){
+			elm.admin = elm.admin === "1" ? true : false;
+		});
+		return membersarray;
+	}
+
 
 	/**
 	 * helper function for finding and deleting user object from user list
@@ -16,8 +28,15 @@ app.controller('userManagementCtrl', function($scope, myModal, toaster, myUser, 
 	 */
 	var removeFromList = function(user){
 		for (var i = $scope.users.length - 1; i >= 0; i--) {
-				if(user.id === $scope.users[i].id){
-					$scope.users.splice(i, 1);
+				if(user.mId === $scope.users[i].mId){
+					userApiFactory.deleteElement(user).success(function(data, status){
+						if(status === 200){
+							$scope.users.splice(i, 1);
+							toaster.pop('success', 'Löschen', 'Mitglied '+ user.name +' gelöscht.');
+						}else{
+							toast.error();
+						}
+					})
 				}
 			};	
 	};
@@ -29,6 +48,14 @@ app.controller('userManagementCtrl', function($scope, myModal, toaster, myUser, 
 	 */
 	$scope.saveUser = function(user){
 		console.log('save', user);
+		userApiFactory.save(user).success(function(data, status){
+						if(status === 200){
+							user.editMode = false;
+							user.mId = data.mId;
+						}else{
+							toast.error();
+						}
+					})
 		$rootScope.$broadcast('user.changed', user);
 	};
 
@@ -40,7 +67,33 @@ app.controller('userManagementCtrl', function($scope, myModal, toaster, myUser, 
 	$scope.deleteUser = function(user){
 			myModal.setContent({'user':user});
 			modal.activate();	
-		};	
+		};
+
+
+	/**
+	 * scope function for adding a new field object. Deletes every unsaved new field object. 
+	 * @return {undefined}
+	 */
+	$scope.newMember = function(){
+		var new_member = {
+			mId: 0,
+			name: '',
+			password: '',
+			admin: false,
+			editMode: true
+		};
+		if(typeof $scope.users !== 'undefined'){
+			for(var i = 0, length = $scope.users.length; i<length; i++){
+				if(Number($scope.users[i].mId)===0){
+					$scope.users.splice(i,1);
+					break;
+				}
+			}
+			$scope.users.push(new_member);
+		}else{
+			$scope.users = [new_member];
+		}
+	}	
 
 
 	/** listener for user.deleted event. 
@@ -49,7 +102,6 @@ app.controller('userManagementCtrl', function($scope, myModal, toaster, myUser, 
 	 */
 	$scope.$on('user.deleted', function(event, args){
 		removeFromList(args);
-		toaster.pop('success', 'Löschen', 'Benutzer'+ args.username +'gelöscht.');
 	});
 
 
@@ -60,7 +112,7 @@ app.controller('userManagementCtrl', function($scope, myModal, toaster, myUser, 
 
 	***************************************************************/
 
-	$scope.users = users;
+	$scope.users = convertNumberStringToBoolean(users.data);
 
 	/** @type {object} modal service for controlling the user modal */
 	var modal = myModal.getNewModal('./client/features/usermanagement/modal.html', 'userModalCtrl');
