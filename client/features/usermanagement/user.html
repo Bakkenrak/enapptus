@@ -18,9 +18,9 @@
 				<td class="text-center"><input type="checkbox" ng-model="user.admin" ng-disabled="user.editMode !== true"></td>
 				<td class="text-center">
 					<button ng-click="deleteUser(user)" class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-trash"></span></button>
-					<button ng-click="user.editMode = true" ng-show="user.editMode !== true" class="btn btn-sm btn-info"><span class="glyphicon glyphicon-pencil"></span></button>
+					<button ng-click="editUser(user)" ng-show="user.editMode !== true" class="btn btn-sm btn-info"><span class="glyphicon glyphicon-pencil"></span></button>
 					<button ng-click="saveUser(user)" ng-hide="user.editMode !== true" class="btn btn-sm btn-success"><span class="glyphicon glyphicon-floppy-saved"></span></button>
-					<button ng-click="user.editMode = false" ng-hide="user.editMode !== true" class="btn btn-sm btn-info"><span class="glyphicon glyphicon-floppy-remove"></span></button>
+					<button ng-click="cancelEdit(user)" ng-hide="user.editMode !== true" class="btn btn-sm btn-info"><span class="glyphicon glyphicon-floppy-remove"></span></button>
 				</td>
 			</tr>
 		</tbody>

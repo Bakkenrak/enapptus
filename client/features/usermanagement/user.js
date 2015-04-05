@@ -69,6 +69,15 @@ app.controller('userManagementCtrl', function($scope, myModal, toaster, myUser, 
 			modal.activate();	
 		};
 
+	$scope.editUser = function(user){
+		user.backup = angular.copy(user);
+		user.editMode = true;
+	};
+
+	$scope.cancelEdit = function(user){
+		angular.copy(user.backup, user);
+	};
+
 
 	/**
 	 * scope function for adding a new field object. Deletes every unsaved new field object. 
