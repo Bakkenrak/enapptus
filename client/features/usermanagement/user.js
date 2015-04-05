@@ -48,6 +48,7 @@ app.controller('userManagementCtrl', function($scope, myModal, toaster, myUser, 
 	 */
 	$scope.saveUser = function(user){
 		console.log('save', user);
+		delete user.backup; //avoid sending unnecessary amount of data
 		userApiFactory.save(user).success(function(data, status){
 						if(status === 200){
 							user.editMode = false;
@@ -57,6 +58,7 @@ app.controller('userManagementCtrl', function($scope, myModal, toaster, myUser, 
 						}
 					})
 		$rootScope.$broadcast('user.changed', user);
+		user.editMode = false;
 	};
 
 	/**
