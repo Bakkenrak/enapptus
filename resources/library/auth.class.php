@@ -46,13 +46,13 @@ class Auth
 	* @return array $return
 	*/
 
-	public function login($username, $password, $remember = 0)
+	public function login($userId, $password, $remember = 0)
 	{
 		if ($this->isBlocked()) {
 			return Array(Array('error' => "Too many failed login attempts. Wait half an hour."), 401);
 		}
 
-		$member = ORM::for_table('member')->where('name', $username)->use_id_column('mId')->find_one();
+		$member = ORM::for_table('member')->use_id_column('mId')->find_one($userId);
 		if(!$member) {
 			$this->addAttempt();
 
@@ -73,7 +73,7 @@ class Auth
 
 		setcookie($this->cookie_name, $sessiondata['hash'], $sessiondata['expiretime'], $this->cookie_path, $this->cookie_domain, $this->cookie_secure, $this->cookie_http);
 
-		return Array(Array('info' => "Logged in successfully.", 'hash' => $sessiondata['hash'], 'admin' => $member->admin), 200);
+		return Array(Array('info' => "Logged in successfully.", 'member' => $member->name, 'hash' => $sessiondata['hash'], 'admin' => $member->admin), 200);
 	}
 
 	/*
@@ -127,6 +127,7 @@ class Auth
 		$session->expiredate = $data['expire'];
 		$session->ip = $ip;
 		$session->agent = $agent;
+		$session->remember = ($remember === true || $remember === 1 || $remember === "true") ? true : false;
 		$session->cookie_crc = $data['cookie_crc'];
 		if(!$session->save()) return false; //abort if save was not successful
 		
@@ -223,6 +224,7 @@ class Auth
 		}
 		
 		if ($db_cookie == sha1($hash . $this->site_key)) {
+			$this->updateSessionExpiration($session);
 			return $uid;
 		}
 		
@@ -241,6 +243,17 @@ class Auth
 		$session = ORM::for_table('sessions')->where('id', $sid)->find_one();
 		$session->ip = $ip;
 		return $session->save();
+	}
+
+	/*
+	* Extends the expiration date for short-term cookies (that are not to be remembered).
+	* This avoids the sudden logout when using the app just beyond the expiration span.
+	*/
+	private function updateSessionExpiration($session){
+		if(!$session->remember){
+			$session->expiredate = date("Y-m-d H:i:s", strtotime($this->cookie_forget));
+			$session->save();
+		}
 	}
 
 	/*
