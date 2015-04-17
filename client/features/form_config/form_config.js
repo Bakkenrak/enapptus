@@ -49,6 +49,8 @@ app.controller('formConfigCtrl', function($scope, formApiFactory, $q, index, toa
 		angular.forEach($scope.form_fields, function(elm){
 			elm.isSelected = false;
 		});
+		
+		field.edit = angular.copy(field);
 		field.isSelected = true;
 	}
 

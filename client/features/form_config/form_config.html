@@ -7,8 +7,8 @@
 		<th class="col-md-7"></th>
 	</thead>
 	<tbody>
-		<tr class="clickable" ng-repeat="field in form_fields | orderBy: 'rank'" ng-click="selectField(field)">
-			<td>{{field.title}}</td>
+		<tr ng-repeat="field in form_fields | orderBy: 'rank'">
+			<td class="clickable"  ng-click="selectField(field)">{{field.title}}</td>
 			<td>			
 				<div class="form-group pull-right">
 					<button ng-disabled="field.rank===1" ng-click="moveUp(field)" class="btn btn-default" data-toggle="tooltip" data-placement="left" title="Feld nach oben verschieben"><span class="glyphicon glyphicon-chevron-up"></span></button>
@@ -22,42 +22,42 @@
 						<tbody>
 							<tr>
 								<td>Beschriftung</td>
-								<td><input class="form-control" type="text" ng-model="field.title" required></td>
+								<td><input class="form-control" type="text" ng-model="field.edit.title" required></td>
 							</tr>
 							<tr>
 								<td>Feldtyp</td>
 								<td>
-									<select ng-options="v.title as k for (k, v) in type_options" ng-change="changeType(field)" class="form-control" ng-model="field.type"></select>
+									<select ng-options="v.title as k for (k, v) in type_options" ng-change="changeType(field.edit)" class="form-control" ng-model="field.edit.type"></select>
 								</td>
 							</tr>
-							<tr ng-show="type_options[field.type].hasOptions">
+							<tr ng-show="type_options[field.edit.type].hasOptions">
 								<td>Verfügbare Optionen</td>
 								<td>
 									<table class="table">
 										<tbody>
-											<tr ng-repeat="option in field.options">
+											<tr ng-repeat="option in field.edit.options">
 												<td>{{option.value}}</td>
-												<td><button class="btn btn-xs btn-danger" ng-click="removeOption(field, $index, field_form)"><span class="glyphicon glyphicon-trash"></span></button></td>
+												<td><button class="btn btn-xs btn-danger" ng-click="removeOption(field.edit, $index, field_form)"><span class="glyphicon glyphicon-trash"></span></button></td>
 											</tr>
 											<tr>
 												<td>
-													<input class="form-control" type="text" ng-model="field.new_option" placeholder="Bitte Option eingeben">
+													<input class="form-control" type="text" ng-model="field.edit.new_option" placeholder="Bitte Option eingeben">
 												</td>
 												<td>
-													<button ng-disabled="!(field.new_option.length > 0)" class="btn btn-default" ng-click="addOption(field)">Hinzufügen</button>
+													<button ng-disabled="!(field.edit.new_option.length > 0)" class="btn btn-default" ng-click="addOption(field.edit)">Hinzufügen</button>
 												</td>
 											</tr>
 										</tbody>
 									</table>
 								</td>
 							</tr>
-							<tr ng-show="type_options[field.type].hasPlaceholder">
+							<tr ng-show="type_options[field.edit.type].hasPlaceholder">
 								<td>Platzhalter</td>
-								<td><input class="form-control" type="text" ng-model="field.placeholder" placeholder="Bitte Platzhalter eingeben"></td>
+								<td><input class="form-control" type="text" ng-model="field.edit.placeholder" placeholder="Bitte Platzhalter eingeben"></td>
 							</tr>
 							<tr>
 								<td>Pflichtfeld</td>
-								<td><input type="checkbox" ng-model="field.is_required"></td>
+								<td><input type="checkbox" ng-model="field.edit.is_required"></td>
 							</tr>
 							<tr>
 								<td>Position</td>
@@ -65,7 +65,7 @@
 							</tr>
 							<tr>
 								<td></td>
-								<td><button ng-disabled="field_form.$invalid || !field_form.$dirty" class="btn btn-success pull-right" ng-click="saveField(field)" data-toggle="tooltip" data-placement="left" title="Feld speichern"><span class="glyphicon glyphicon-save"></span></button></td>
+								<td><button ng-disabled="field_form.$invalid || !field_form.$dirty" class="btn btn-success pull-right" ng-click="saveField(field.edit)" data-toggle="tooltip" data-placement="left" title="Feld speichern"><span class="glyphicon glyphicon-save"></span></button></td>
 							</tr>
 						</tbody>
 					</table>
