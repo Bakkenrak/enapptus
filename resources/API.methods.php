@@ -175,11 +175,11 @@
 
 			} elseif(isset($this->args[0]) && is_numeric($this->args[0])) { // call to api/application/{id}
 
-				$this->auth->authenticate(); //check if caller is authorized to use this method
+				$mId = $this->auth->authenticate(); //check if caller is authorized to use this method
 
 				if($this->method == 'GET') { //return member with given id
 
-					return $this->getApplication();
+					return $this->getApplication($mId);
 
 				} elseif($this->method == 'DELETE') { //delete application with given id
 
@@ -194,11 +194,11 @@
 				}
 			} else { //call to any other domain: api/member/*
 				
-				$this->auth->authenticate(); //check if caller is authorized to use this method
+				$mId = $this->auth->authenticate(); //check if caller is authorized to use this method
 				
 				if ($this->method == 'GET') { // return all applications
 
-					return $this->getApplications();
+					return $this->getApplications($mId);
 
 		        } 
 		        else {
@@ -549,22 +549,28 @@
 
 	// Applications --------------------------------------------------------
 
-		private function getApplication(){
+		private function getApplication($authMId){
 			$application = ORM::for_table('application')->where('aId', $this->args[0])->find_one();
 
 			if(!$application)
 				return parent::_response(Array('error' => 'Application not found'), 403);
 
 			$application->answers = ORM::for_table('answer')->where('aId', $this->args[0])->find_array();
+			$application->questions = $this->getQuestionsByApplication($authMId, $this->args[0], true);
+			$application->votes = $this->getVotesByApplication($this->args[0]);
+			$application->ownVote = $this->getVote($authMId, $this->args[0], true);
 
 			return parent::_response($application->as_array());
 		}
 
-		private function getApplications(){
+		private function getApplications($authMId){
 			$applications = ORM::for_table('application')->find_array();
 
 			foreach ($applications as $idx => $application) {
 				$applications[$idx]['answers'] = ORM::for_table('answer')->where('aId', $application['aId'])->find_array();
+				$applications[$idx]['questions'] = $this->getQuestionsByApplication($authMId, $application['aId'], true);
+				$applications[$idx]['votes'] = $this->getVotesByApplication($application['aId']);
+				$applications[$idx]['ownVote'] = $this->getVote($authMId, $application['aId'], true);
 			}
 
 			return parent::_response($applications);
@@ -616,10 +622,18 @@
 
 	// Votes --------------------------------------------------------
 
-		private function getVote(){
-			$vote = ORM::for_table('vote')->where(Array('mId' => $this->args[0], 'aId' => $this->args[1]))->find_one();
-			if(!$vote)
+		private function getVote($mId = null, $aId = null, $rawResult = false){
+			if($mId == null) $mId = $this->args[0];
+			if($aId == null) $aId = $this->args[1];
+
+
+			$vote = ORM::for_table('vote')->where(Array('mId' => $mId, 'aId' => $aId))->find_one();
+			if(!$vote) {
+				if($rawResult) return null; //internal use of this method
 				return parent::_response(Array('error' => 'Vote not found'), 403);
+			}
+
+			if($rawResult) return $vote->as_array(); //internal use of this method
 
 			return parent::_response($vote->as_array());
 		}
@@ -630,10 +644,24 @@
 			return parent::_response($votes);
 		}
 
-		private function getVotes(){
+		private function getVotes($rawResult = false){
 			$votes = ORM::for_table('vote')->select_many('aId', 'value')->select_expr('COUNT(*)', 'count')->group_by('aId')->group_by('value')->find_array();
 
+			if($rawResult) return $votes; //internal use of this method
+
 			return parent::_response($votes);
+		}
+
+		private function getVotesByApplication($aId){ //internal use only
+			$aggregations = ORM::for_table('vote')->where('aId', $aId)->select_many('aId', 'value')->select_expr('COUNT(*)', 'count')->group_by('value')->find_array();
+
+			if(count($aggregations) == 0) return null;
+
+			$summary = new stdClass;
+			foreach ($aggregations as $aggregation) {
+				$summary->{$aggregation['value']} = $aggregation['count'];
+			}
+			return $summary;
 		}
 
 		private function saveVote($authMId) {
@@ -674,13 +702,17 @@
 			return parent::_response($questions);
 		}
 
-		private function getQuestionsByApplication($authMId) {
-			$questions = ORM::for_table('question')->where('aId', $this->args[0])->find_array();
+		private function getQuestionsByApplication($authMId, $aId = null, $rawResult = false) {
+			if($aId == null) $aId = $this->args[0];
+
+			$questions = ORM::for_table('question')->where('aId', $aId)->find_array();
 
 			foreach ($questions as $key => $question) { //remove member information from questions that are not by the requesting member
 				if($question['mId']!=$authMId)
 					unset($questions[$key]['mId']);
 			}
+
+			if($rawResult) return $questions; //internal use of this method
 
 			return parent::_response($questions);
 		}
