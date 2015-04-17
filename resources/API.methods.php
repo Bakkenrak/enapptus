@@ -644,12 +644,20 @@
 			return parent::_response($votes);
 		}
 
-		private function getVotes($rawResult = false){
-			$votes = ORM::for_table('vote')->select_many('aId', 'value')->select_expr('COUNT(*)', 'count')->group_by('aId')->group_by('value')->find_array();
+		private function getVotes(){
+			$aggregations = ORM::for_table('vote')->select_many('aId', 'value')->select_expr('COUNT(*)', 'count')->group_by('aId')->group_by('value')->find_array();
 
-			if($rawResult) return $votes; //internal use of this method
+			$summary = array();
+			foreach ($aggregations as $aggregation) {
+				$aId = $aggregation['aId'];
+				if(!isset($summary[$aId])) {
+					$summary[$aId] = new stdClass;
+					$summary[$aId]->aId = $aId;
+				}
+				$summary[$aId]->{$aggregation['value']} = $aggregation['count'];
+			}
 
-			return parent::_response($votes);
+			return parent::_response(array_values($summary));
 		}
 
 		private function getVotesByApplication($aId){ //internal use only
