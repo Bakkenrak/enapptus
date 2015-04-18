@@ -555,7 +555,7 @@
 			if(!$application)
 				return parent::_response(Array('error' => 'Application not found'), 403);
 
-			$application->answers = ORM::for_table('answer')->where('aId', $this->args[0])->find_array();
+			$application->answers = ORM::for_table('answer')->join('field', array('answer.fId', '=', 'field.fId'))->order_by_asc('rank')->select_many('answer.fId', 'value')->where('aId', $this->args[0])->find_array();
 			$application->questions = $this->getQuestionsByApplication($authMId, $this->args[0], true);
 			$application->votes = $this->getVotesByApplication($this->args[0]);
 			$application->ownVote = $this->getVote($authMId, $this->args[0], true);
@@ -567,7 +567,7 @@
 			$applications = ORM::for_table('application')->find_array();
 
 			foreach ($applications as $idx => $application) {
-				$applications[$idx]['answers'] = ORM::for_table('answer')->where('aId', $application['aId'])->find_array();
+				$applications[$idx]['answers'] = ORM::for_table('answer')->join('field', array('answer.fId', '=', 'field.fId'))->where('aId', $application['aId'])->order_by_asc('rank')->select_many('answer.fId', 'value')->find_array();
 				$applications[$idx]['questions'] = $this->getQuestionsByApplication($authMId, $application['aId'], true);
 				$applications[$idx]['votes'] = $this->getVotesByApplication($application['aId']);
 				$applications[$idx]['ownVote'] = $this->getVote($authMId, $application['aId'], true);
