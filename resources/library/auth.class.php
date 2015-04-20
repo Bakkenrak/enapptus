@@ -73,7 +73,7 @@ class Auth
 
 		setcookie($this->cookie_name, $sessiondata['hash'], $sessiondata['expiretime'], $this->cookie_path, $this->cookie_domain, $this->cookie_secure, $this->cookie_http);
 
-		return Array(Array('info' => "Logged in successfully.", 'member' => $member->name, 'hash' => $sessiondata['hash'], 'admin' => $member->admin), 200);
+		return Array(Array('info' => "Logged in successfully.", 'mId' => $member->mId, 'member' => $member->name, 'hash' => $sessiondata['hash'], 'admin' => $member->admin), 200);
 	}
 
 	/*
