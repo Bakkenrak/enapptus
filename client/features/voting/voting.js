@@ -101,7 +101,8 @@ app.controller('votingCtrl', function($scope, types, formApiFactory, application
 					mId: res.mId,
 					value: res.value
 				});
-				$scope.new_question = undefined;
+				toaster.pop("success", 'Frage erfolgreich hinzugefügt');
+				$scope.new_question = '';
 			}else{
 				toaster.pop('error', 'Frage nicht gespeichert');
 			}
