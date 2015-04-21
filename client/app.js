@@ -43,7 +43,16 @@ app.config(['$routeProvider', function($routeProvider){
 			templateUrl: './client/features/voting/voting.html',
 			controller: 'votingCtrl',
 			data: {
+				
 				admin_only: false
+			},
+			resolve : {
+				form_fields_query : function(formApiFactory){
+					return formApiFactory.index();
+				},
+				applicants_query : function(applicationApiFactory){
+					return applicationApiFactory.index(); 
+				}
 			}
 		})
 		.otherwise({
@@ -51,8 +60,13 @@ app.config(['$routeProvider', function($routeProvider){
 		});
 }])
 .run(function(myUser, $location, $rootScope){
+	/**
+	 * check for user login
+	 */
 	if(!myUser.isLoggedIn()){
 		$location.path('/login');
+	}else{
+		$location.path('/voting');
 	}
 
 	/**

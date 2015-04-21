@@ -1,4 +1,4 @@
-app.controller('votingCtrl', function($scope, types, formApiFactory, applicationApiFactory, voteApiFactory, myUser, toaster){
+app.controller('votingCtrl', function($scope, types, form_fields_query, applicants_query, voteApiFactory, myUser, toaster, applicationApiFactory){
 	/**************************************************************
 
 							Function Declarations
@@ -6,7 +6,14 @@ app.controller('votingCtrl', function($scope, types, formApiFactory, application
 
 	***************************************************************/
 
+	
+	/**
+	 * scope function for switching between applications
+	 * @param  {string} direction can be 'next' or 'last' and indicates the direction for switching.
+	 * @return {undefined}           
+	 */
 	$scope.toggleApplication = function(direction){
+		$scope.selected_application.new_question= '';
 		switch(direction.toLowerCase()){
 			case 'next':
 				$scope.applicant_pointer++;
@@ -26,6 +33,7 @@ app.controller('votingCtrl', function($scope, types, formApiFactory, application
 
 	***************************************************************/
 	
+	
 	var Applicant = function(props){
 		this.own_vote = props.ownVote === null ? null : props.ownVote.value;
 		this.aId = props.aId ? props.aId : -1;
@@ -33,13 +41,15 @@ app.controller('votingCtrl', function($scope, types, formApiFactory, application
 		return this;
 	};
 
-	$scope.form_fields = [];
+	
+
+	/**
+	 * scope reference for making user object available in scope.
+	 * @type {Object}
+	 */
 	$scope.this_user = myUser.getUser();
 
-	formApiFactory.index().success(function(data){
-		$scope.form_fields = data;
-		console.log('form_fields', data);
-	});
+	$scope.form_fields = form_fields_query.data;
 
 	/**
 	 * scope object reference for displaying the current selected application
@@ -48,7 +58,7 @@ app.controller('votingCtrl', function($scope, types, formApiFactory, application
 	$scope.selected_application = {};
 
 	/**
-	 * container for all applicants (with name, id, answers etc)
+	 * scope container for all applicants (with name, id, answers etc)
 	 * @type {Array}
 	 */
 	$scope.applications = [];
@@ -58,15 +68,10 @@ app.controller('votingCtrl', function($scope, types, formApiFactory, application
 	 * @type {Number}
 	 */
 	$scope.applicant_pointer = 0;
-
-	applicationApiFactory.index().success(function(data){
-		console.log(data);
-		angular.forEach(data, function(elm){
+	angular.forEach(applicants_query.data, function(elm){
 			$scope.applications.push(new Applicant(elm));
 		});
-		$scope.selected_application = $scope.applications[$scope.applicant_pointer];
-		console.log('applications', $scope.applications);	
-	});
+	$scope.selected_application = $scope.applications[$scope.applicant_pointer];
 
 	Applicant.prototype.saveVote = function(votestring){
 		var instance = this;
@@ -83,16 +88,19 @@ app.controller('votingCtrl', function($scope, types, formApiFactory, application
 			}
 		});
 	};
+
 	Applicant.prototype.delete = function(){
 		console.log('delete', this);
 	};
-	Applicant.prototype.addQuestion = function(question){
+
+	Applicant.prototype.addQuestion = function(){
+		var question = $scope.new_question;
 		var instance = this;
 		voteApiFactory.saveQuestion({
 			qId : 0,
 			aId : instance.aId,
 			mId : myUser.getUser().mId,
-			value : question
+			value: question
 		}).success(function(res, status){
 			if(status === 200){
 				instance.attr.questions.push({
@@ -102,7 +110,6 @@ app.controller('votingCtrl', function($scope, types, formApiFactory, application
 					value: res.value
 				});
 				toaster.pop("success", 'Frage erfolgreich hinzugefügt');
-				$scope.new_question = '';
 			}else{
 				toaster.pop('error', 'Frage nicht gespeichert');
 			}

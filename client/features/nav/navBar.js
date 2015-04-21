@@ -17,7 +17,10 @@ app.controller('navBarCtrl', function($scope, $rootScope, $location, myUser, use
 			$scope.numberInactive = count;
 		};
 	};
-
+	/**
+	 * scope function for logging out a user
+	 * @return {undefined} 
+	 */
 	$scope.logout = function(){
 		$http({
 				method:'GET',
@@ -43,17 +46,19 @@ app.controller('navBarCtrl', function($scope, $rootScope, $location, myUser, use
 
 	/** listener for user.changed event. refreshes inactive user number */
 	$scope.$on('user.changed', function(event, args){
+		$scope.isAdmin = myUser.isAdmin();
 		findInactiveUser();
 	});
 	/** listener for user.deleted event. refreshes inactive user number */
 	$scope.$on('user.deleted', function(event, args){
 		findInactiveUser();
 	});
-
+	/** listener for user.login event. */
 	$scope.$on('user.login', function(event, args){
 		$scope.isAdmin = myUser.isAdmin();
 		$scope.isLoggedIn = true;
 	});
+	/** listener for user.logout event. */
 	$scope.$on('user.logout', function(event, args){
 		$scope.isAdmin = false;
 		$scope.isLoggedIn = false;

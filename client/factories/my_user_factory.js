@@ -10,7 +10,6 @@ app.factory('myUser', function($rootScope, $cookies){
 		 */
 		loginUser: function(user){
 			$cookies.put('this_user', JSON.stringify(user));
-			console.log(user);
 			$rootScope.$broadcast('user.login');
 		},
 		/**
