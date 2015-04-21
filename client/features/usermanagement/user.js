@@ -15,9 +15,9 @@ app.controller('userManagementCtrl', function($scope, myModal, toaster, myUser, 
 	 */
 	var convertNumberStringToBoolean = function(membersarray){
 		console.log(membersarray);
-/*		angular.forEach(membersarray, function(elm){
+		angular.forEach(membersarray, function(elm){
 			elm.admin = elm.admin === "1" ? true : false;
-		});*/
+		});
 		return membersarray;
 	}
 
