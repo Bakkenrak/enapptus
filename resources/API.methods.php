@@ -760,8 +760,7 @@
 			$question = ORM::for_table('question')->use_id_column('qId')->find_one($input->qId);
 			if(!$question)
 				$question = ORM::for_table('question')->create();
-
-			if($authMId != $question->mId)
+			elseif($authMId != $question->mId)
 				return parent::_response(Array('error' => "Not allowed to edit questions of other members"), 401);
 
 			$question->mId = $input->mId;
