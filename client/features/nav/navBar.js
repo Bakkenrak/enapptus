@@ -30,7 +30,6 @@ app.controller('navBarCtrl', function($scope, $rootScope, $location, myUser, use
 					toaster.pop('error', '', 'Fehler beim Logoutvorgang.');
 				}else{
 					myUser.logoutUser();
-					$location.path('/login');
 				}
 			}).error(function(err, status){
 				toaster.pop('error', '', 'Fehler beim Logoutvorgang.');

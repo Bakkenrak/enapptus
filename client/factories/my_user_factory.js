@@ -1,4 +1,4 @@
-app.factory('myUser', function($rootScope, $cookies){
+app.factory('myUser', function($rootScope, $cookies, $location){
 	/**
 	 * angular cookies is used for storing user object 
 	 */
@@ -46,6 +46,7 @@ app.factory('myUser', function($rootScope, $cookies){
 		logoutUser : function(){
 			$cookies.remove('this_user');
 			$rootScope.$broadcast('user.logout');
+			$location.path('/login');
 		}
 	};
 })

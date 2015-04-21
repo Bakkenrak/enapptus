@@ -6,7 +6,7 @@ var app = angular.module('enactusPortal', [
 	'btford.modal'
 	]);
 
-app.config(['$routeProvider', function($routeProvider){
+app.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpProvider){
 	$routeProvider
 		.when('/formconfig', {
 			templateUrl: './client/features/form_config/form_config.html', 
@@ -58,6 +58,10 @@ app.config(['$routeProvider', function($routeProvider){
 		.otherwise({
 			redirectTo: '/voting'
 		});
+
+
+		$httpProvider.interceptors.push('httpResponseInterceptor');
+
 }])
 .run(function(myUser, $location, $rootScope){
 	/**
