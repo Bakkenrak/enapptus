@@ -26,7 +26,7 @@ app.factory('myUser', function($rootScope, $cookies){
 		 */
 		isAdmin: function(){
 			if(typeof $cookies.get('this_user') !== 'undefined'){
-				return (!!JSON.parse($cookies.get('this_user')).admin);
+				return (Boolean(Number(JSON.parse($cookies.get('this_user')).admin)));
 			}else{
 				return false;
 			}

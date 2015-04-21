@@ -50,6 +50,7 @@ app.controller('votingCtrl', function($scope, types, form_fields_query, applican
 	$scope.this_user = myUser.getUser();
 
 	$scope.form_fields = form_fields_query.data;
+	$scope. isAdmin = myUser.isAdmin();
 
 	/**
 	 * scope object reference for displaying the current selected application
@@ -90,7 +91,26 @@ app.controller('votingCtrl', function($scope, types, form_fields_query, applican
 	};
 
 	Applicant.prototype.delete = function(){
-		console.log('delete', this);
+		var instance = this;
+		if(myUser.isAdmin()){
+			applicationApiFactory.delete(instance).success(function(res, status){
+				console.log(res, status);
+				if(status === 200){
+					$scope.applications.splice($scope.applicant_pointer, 1);
+					if($scope.applications.length>0){
+						$scope.applicant_pointer = 0;
+						$scope.selected_application	= $scope.applications[$scope.applicant_pointer];
+					}else{
+						$scope.selected_application = {};
+						$scope.applicant_pointer = 0;
+					}
+					 
+					toaster.pop('success', 'Bewerber gelöscht');
+				}else{
+					toaster.pop('error', 'Löschen fehlgeschlagen');
+				}
+			})
+		};
 	};
 
 	Applicant.prototype.addQuestion = function(){

@@ -8,6 +8,9 @@
 	.btn-control{
 		min-width:120px;
 	}
+	.delete-applicant-container{
+		padding:10px;
+	}
 </style>
 
 <div class="row ">
@@ -69,6 +72,12 @@
 					</div>
 				</form>
 			</div>
+			<div ng-show="isAdmin" class="delete-applicant-container">
+				<div class="row">
+					<button class="btn btn-danger" ng-click="selected_application.delete()">Bewerber löschen</button>
+				</div>
+			</div>		
+
 		</div>
 	</div>
 </div>

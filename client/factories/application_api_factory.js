@@ -11,13 +11,13 @@ app.factory('applicationApiFactory', function($http){
 		index : function(){
 			return $http({
 				method:'GET',
-				url: ' api/application'
+				url: 'api/application'
 			});
 		},
-		deleteElement : function(member){
+		delete : function(application){
 			return $http({
 				method:'DELETE',
-				url: ''+member.mId,
+				url: 'api/application/'+application.aId,
 				headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
 			});
 		}
