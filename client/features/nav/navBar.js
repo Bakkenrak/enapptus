@@ -26,7 +26,8 @@ app.controller('navBarCtrl', function($scope, $rootScope, $location, myUser, use
 				if(status !== 200){
 					toaster.pop('error', '', 'Fehler beim Logoutvorgang.');
 				}else{
-					$window.location.href = 'login.html';
+					myUser.logoutUser();
+					$location.path('/login');
 				}
 			}).error(function(err, status){
 				toaster.pop('error', '', 'Fehler beim Logoutvorgang.');
@@ -49,6 +50,16 @@ app.controller('navBarCtrl', function($scope, $rootScope, $location, myUser, use
 		findInactiveUser();
 	});
 
+	$scope.$on('user.login', function(event, args){
+		$scope.isAdmin = myUser.isAdmin();
+		$scope.isLoggedIn = true;
+	});
+	$scope.$on('user.logout', function(event, args){
+		$scope.isAdmin = false;
+		$scope.isLoggedIn = false;
+	});
+
+
 
 	/**************************************************************
 
@@ -56,8 +67,11 @@ app.controller('navBarCtrl', function($scope, $rootScope, $location, myUser, use
 
 
 	***************************************************************/
-	/** @type {Array} store for available navigation objects */
-	$scope.navItems = [
+
+	angular.extend($scope, {
+		isAdmin : myUser.isAdmin(),
+		isLoggedIn: myUser.isLoggedIn(),
+		navItems : [
 			{
 				name: 'Form Konfigurator',
 				route: '#/formconfig',
@@ -73,9 +87,6 @@ app.controller('navBarCtrl', function($scope, $rootScope, $location, myUser, use
 				route: '#/voting',
 				admin_only: $route.routes['/voting'].data.admin_only 
 			}
-		];
-
-	$scope.isAdmin = myUser.isAdmin();
-	findInactiveUser();
-
+		]
+	});
 });

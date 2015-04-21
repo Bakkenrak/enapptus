@@ -1,6 +1,7 @@
 
 var app = angular.module('enactusPortal', [
 	'ngRoute',
+	'ngCookies',
 	'toaster',
 	'btford.modal'
 	]);
@@ -31,6 +32,13 @@ app.config(['$routeProvider', function($routeProvider){
 				}
 			}
 		})
+		.when('/login', {
+			templateUrl: './client/features/login/login.html',
+			controller: 'loginCtrl',
+			data: {
+				admin_only: false
+			}
+		})
 		.when('/voting', {
 			templateUrl: './client/features/voting/voting.html',
 			controller: 'votingCtrl',
@@ -39,10 +47,13 @@ app.config(['$routeProvider', function($routeProvider){
 			}
 		})
 		.otherwise({
-			redirectTo: '/formconfig'
+			redirectTo: '/voting'
 		});
 }])
 .run(function(myUser, $location, $rootScope){
+	if(!myUser.isLoggedIn()){
+		$location.path('/login');
+	}
 
 	/**
 	 * listener for interception route changes. checks for permission. if permission is not matched redirect to default route
@@ -60,16 +71,5 @@ app.config(['$routeProvider', function($routeProvider){
 				$location.path('/');
 			}
 		}	
-	});
-
-	/**
-	 * setting myUser to test user
-	 */
-	myUser.setUser({
-		id: 1,
-		username: 'lucas',
-		email:'test@test',
-		is_active: true,
-		is_admin: true
 	});		
 });

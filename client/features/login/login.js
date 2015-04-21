@@ -1,7 +1,4 @@
-var app = angular.module('loginApp', [
-	'toaster'
-	])
-.controller('loginCtrl', function($scope, $http, toaster, $window	){
+app.controller('loginCtrl', function($scope, $http, toaster,$location,myUser, $rootScope){
 	
 
 	/**************************************************************
@@ -28,7 +25,8 @@ var app = angular.module('loginApp', [
 					console.log(res);
 					toaster.pop('error', '', 'Fehler beim Loginvorgang.');
 				}else{
-					$window.location.href = 'index.html';
+					myUser.loginUser(res);
+					$location.path('/voting');
 				}
 			}).error(function(err, status){
 				console.log(toaster);
