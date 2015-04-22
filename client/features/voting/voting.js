@@ -94,7 +94,6 @@ app.controller('votingCtrl', function($scope, types, form_fields_query, applican
 		var instance = this;
 		if(myUser.isAdmin()){
 			applicationApiFactory.delete(instance).success(function(res, status){
-				console.log(res, status);
 				if(status === 200){
 					$scope.applications.splice($scope.applicant_pointer, 1);
 					if($scope.applications.length>0){
@@ -112,7 +111,29 @@ app.controller('votingCtrl', function($scope, types, form_fields_query, applican
 			})
 		};
 	};
-
+	/**
+	 * prototype function for changing applicant's status. 
+	 * @param  {string} statusstring string which represents current status. can be 'Abgelehnt', 'Eingeladen' or 'Abstimmung'
+	 * @return {undefined}       
+	 */
+	Applicant.prototype.changeStatus = function(statusstring){
+		var instance = this;
+		applicationApiFactory.changeStatus({
+			aId: instance.aId,
+			mId: myUser.getUser().mId,
+			status : statusstring,
+		}).success(function(res, status){
+			if(status === 200){
+				toaster.pop('success', 'Status erfolgreich geändert');
+				instance.attr.status = statusstring;
+			}else{
+				toaster.pop('error', 'Aktion fehlgeschlagen');
+			}
+		});
+	}
+	/**
+	 * prototype function for adding a question to an application. uses scope variable 'new_question' for input. Adds question to application object's question array when http query returned successful.
+	 */
 	Applicant.prototype.addQuestion = function(){
 		var question = $scope.new_question;
 		var instance = this;
@@ -135,7 +156,11 @@ app.controller('votingCtrl', function($scope, types, form_fields_query, applican
 			}
 		});
 	}
-
+	/**
+	 * prototype function for deleting a question connected with an application. removes question from object when http query returned successful.
+	 * @param  {integer} question_index index of question array for finding question which should be deleted
+	 * @return {undefined}             
+	 */
 	Applicant.prototype.deleteQuestion = function(question_index){
 		var instance = this;
 		voteApiFactory.deleteQuestion({

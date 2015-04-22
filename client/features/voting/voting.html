@@ -1,83 +1,119 @@
 <style>
-	.applicant-container{
-
-	}
 	.question-input-container{
 		margin-top:50px;
 	}
-	.btn-control{
-		min-width:120px;
+	.voting-buttons-container{
+		display:inline-block;
+		height:85px;
+		text-align:center;
 	}
-	.delete-applicant-container{
-		padding:10px;
+	.voting-buttons-container div button{
+		min-width:120px;
+		vertical-align: top;
+	}
+	.voting-buttons-container div {
+		min-width: 380px;
+	}
+	.admin-panel-ctrls{
+		
+	}
+	.admin-panel-ctrls .btn{
+		margin:10px;
+		display:block;
+		width:120px;
+	}
+	.voting-button-grid{
+		margin-bottom: 30px;
+		min-height: 85px;
 	}
 </style>
-
-<div class="row ">
-	<div class="col-md-8 col-md-offset-2">
-		<button ng-disabled="!(applicant_pointer > 0)" class="btn btn-default btn-lg" ng-click="toggleApplication('last')"><span class="glyphicon glyphicon-chevron-left"></span>
-		</button>
-		<button class="btn btn-control btn-success" ng-class="{'btn-lg':selected_application.own_vote ==='pro'}" ng-click="selected_application.saveVote('pro')">Einladen</button>
-		<button class="btn btn-warning btn-control" ng-class="{'btn-lg':selected_application.own_vote ==='neutral'}" ng-click="selected_application.saveVote('neutral')">Neutral</button>
-		<button class="btn btn-danger btn-control" ng-class="{'btn-lg':selected_application.own_vote ==='con'}" ng-click="selected_application.saveVote('con')" ng-click="selected_application.saveVote('con')">Ablehnen</button>
-		<button ng-disabled ="applicant_pointer >= applications.length-1" class="btn btn-default btn-lg" ng-click="toggleApplication('next')"><span class="glyphicon glyphicon-chevron-right"></span></button>
-	</div>
-</div>
-<div class="row" style="margin-top: 50px">
-	<div class="panel panel-default">
-		<div class="panel-body">
-			<div class="applicant-container">
-				<div class="row">
-					<div class="col-md-2">
-						<div class="" ng-repeat="field in form_fields">
-							<p>{{field.title}}</p>
+<div class="row">
+	<div class="col-md-12">
+			<div class="col-md-9 voting-button-grid">
+				<div class="col-md-3">
+					<button ng-disabled="!(applicant_pointer > 0)" class="btn btn-default btn-lg" ng-click="toggleApplication('last')"><span class="glyphicon glyphicon-chevron-left"></span>
+					</button>
+				</div>
+				<div class="col-md-6">
+					<div class="voting-buttons-container" ng-switch on="selected_application.attr.status">
+						<div ng-switch-when="Abstimmung">
+							<button class="btn btn-success" ng-class="{'btn-lg':selected_application.own_vote ==='pro'}" ng-click="selected_application.saveVote('pro')"><span class="glyphicon glyphicon-thumbs-up"></span></button>
+							<button class="btn btn-warning" ng-class="{'btn-lg':selected_application.own_vote ==='neutral'}" ng-click="selected_application.saveVote('neutral')"><span class="glyphicon glyphicon-hand-right"></span></button>
+							<button class="btn btn-danger" ng-class="{'btn-lg':selected_application.own_vote ==='con'}" ng-click="selected_application.saveVote('con')" ng-click="selected_application.saveVote('con')"><span class="glyphicon glyphicon-thumbs-down"></span></button>
 						</div>
-					</div>
-					<div class="col-md-6">
-						<div class="" ng-repeat="answer in selected_application.attr.answers">
-							<p>{{answer.value}}</p>
-						</div>
-					</div>
-					<div class="col-md-4">
-						<img src="client/assets/profil.gif" height="200px" width="200px">
+						<div ng-switch-when="Abgelehnt" class="text-danger"><p>Der Bewerber wurde bereits <b>abgelehnt</b></p></div>
+						<div ng-switch-when="Eingeladen" class="text-success"><p>Der Bewerber wurde bereits <b>eingeladen</b></p></div>
 					</div>
 				</div>
-				<hr>
-				<div class="row">
-					<div class="col-md-2">
-						<p>Fragen:</p>
+				<div class="col-md-3">
+					<button ng-disabled ="applicant_pointer >= applications.length-1" class="btn btn-default btn-lg pull-right" ng-click="toggleApplication('next')"><span class="glyphicon glyphicon-chevron-right"></span></button>
+				</div>
+			</div>
+		<div class="col-md-9">
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<div class="applicant-container">
+						<div class="row">
+							<div class="col-md-2">
+								<div class="" ng-repeat="field in form_fields">
+									<p>{{field.title}}</p>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="" ng-repeat="answer in selected_application.attr.answers">
+									<p>{{answer.value}}</p>
+								</div>
+							</div>
+							<div class="col-md-4">
+								<img src="client/assets/profil.gif" height="200px" width="200px">
+							</div>
+						</div>
+						<hr>
+						<div class="row">
+							<div class="col-md-2">
+								<p>Fragen:</p>
+							</div>
+							<div class="col-md-10">
+								<table class="table table-condensed table-striped borderless">
+									<tr ng-repeat="question in selected_application.attr.questions">
+										<td class="col-md-10"><p>{{question.value}}</p></td>
+										<td class="col-md-2"><button ng-show="this_user.mId === question.mId" ng-click="selected_application.deleteQuestion($index)" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash"></span></button></td>
+									</tr>
+								</table>
+							</div>
+						</div>
 					</div>
-					<div class="col-md-10">
-						<table class="table table-condensed borderless">
-							<tr ng-repeat="question in selected_application.attr.questions">
-								<td class="col-md-10"><p>{{question.value}}</p></td>
-								<td class="col-md-2"><button ng-show="this_user.mId === question.mId" ng-click="selected_application.deleteQuestion($index)" class="btn btn-danger btn-sm"><span class="glyphicon glyphicon-trash"></span></button></td>
-							</tr>
-						</table>
+					<div class="question-input-container">
+						<form ng-submit="selected_application.addQuestion()" name="question_form">
+							<div class="row">
+								<div class="col-md-2">
+									<p>Deine Frage</p>
+								</div>
+								<div class="col-md-6">
+									<input type="text" style="width:100%" ng-model="new_question" required>				
+								</div>
+								<div class="col-md-2">
+									<input type="submit" ng-disabled="question_form.$invalid" class="btn btn-default btn-sm">
+								</div>
+							</div>
+						</form>
 					</div>
 				</div>
 			</div>
-			<div class="question-input-container">
-				<form ng-submit="selected_application.addQuestion()" name="question_form">
-					<div class="row">
-						<div class="col-md-2">
-							<p>Deine Frage</p>
-						</div>
-						<div class="col-md-6">
-							<input type="text" style="width:100%" ng-model="new_question" required>				
-						</div>
-						<div class="col-md-2">
-							<input type="submit" ng-disabled="question_form.$invalid" class="btn btn-default btn-sm">
-						</div>
-					</div>
-				</form>
-			</div>
-			<div ng-show="isAdmin" class="delete-applicant-container">
-				<div class="row">
-					<button class="btn btn-danger" ng-click="selected_application.delete()">Bewerber löschen</button>
-				</div>
-			</div>		
-
 		</div>
+			<div class="col-md-3">
+		<div class="panel panel-default" ng-show="isAdmin">
+			<div class="panel-heading"><h3>Admin Controls</h3></div>
+			<div class="panel-body">
+				<div class="admin-panel-ctrls">
+					<button ng-disabled="selected_application.attr.status==='Abgelehnt'" class="btn btn-danger" ng-click="selected_application.changeStatus('Abgelehnt')">Ablehnen</button>
+					<button ng-disabled="selected_application.attr.status==='Eingeladen'" class="btn btn-success" ng-click="selected_application.changeStatus('Eingeladen')">Einladen</button>
+					<button ng-disabled="selected_application.attr.status==='Abstimmung'" class="btn btn-info" ng-click="selected_application.changeStatus('Abstimmung')">Abstimmen</button>
+					<hr>
+					<button class="btn btn-danger" ng-click="selected_application.delete()"><span class="glyphicon glyphicon-trash"></span></button>
+				</div>
+			</div>
+		</div>
+	</div>
 	</div>
 </div>

@@ -20,6 +20,14 @@ app.factory('applicationApiFactory', function($http){
 				url: 'api/application/'+application.aId,
 				headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
 			});
+		},
+		changeStatus : function(application){
+			return $http({
+				method:'POST',
+				data: application,
+				url: 'api/application/'+application.aId,
+				headers : {'Content-Type': 'application/x-www-form-urlencoded'} 
+			});
 		}
 	}
 });
