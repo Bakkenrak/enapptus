@@ -187,9 +187,15 @@
 
 					return $this->deleteApplication();
 
+				} elseif($this->method == 'POST') { //update the status of an application
+
+					$this->auth->authenticate(true); //check if caller is authorized to use this method
+
+					return $this->changeApplicationStatus();
+
 				} else { // wrong method
 
-					return parent::_response(Array('error' => 'Only accepts GET or DELETE requests.'), 403);
+					return parent::_response(Array('error' => 'Only accepts GET, DELETE or POST requests.'), 403);
 
 				}
 			} else { //call to any other domain: api/member/*
@@ -564,7 +570,7 @@
 		}
 
 		private function getApplications($authMId){
-			$applications = ORM::for_table('application')->find_array();
+			$applications = ORM::for_table('application')->order_by_asc('time')->find_array();
 
 			foreach ($applications as $idx => $application) {
 				$applications[$idx]['answers'] = ORM::for_table('answer')->join('field', array('answer.fId', '=', 'field.fId'))->where('aId', $application['aId'])->order_by_asc('rank')->select_many('answer.fId', 'value')->find_array();
@@ -618,6 +624,26 @@
 			$id = $application->aId;
 			$application->delete();
 			return parent::_response(Array('information' => 'Application with ID ' . $id . ' was deleted.'));
+		}
+
+		private function changeApplicationStatus() {
+			$application = ORM::for_table('application')->use_id_column('aId')->find_one($this->args[0]);
+
+			if(!$application) //when no application with this id in db
+				return parent::_response(Array('error' => 'Application not found'), 403);
+
+			$input = json_decode($this->file); //decode input json
+
+			if(!isset($input->status))
+				return parent::_response(Array('error' => "Attribute status is missing"), 400);
+
+			if($input->status != "Abstimmung" && $input->status != "Eingeladen" && $input->status != "Abgelehnt")
+				return parent::_response(Array('error' => "Attribute status should be either 'Abstimmung', 'Eingeladen' or 'Abgelehnt'"), 400);
+
+			$application->status = $input->status;
+			$application->save();
+
+			return parent::_response($application->as_array());
 		}
 
 	// Votes --------------------------------------------------------
@@ -688,8 +714,12 @@
 
 			if(!ORM::for_table('member')->where('mId', $input->mId)->find_one())
 				return parent::_response(Array('error' => 'Member not found'), 403);
-			if(!ORM::for_table('application')->where('aId', $input->aId)->find_one())
+
+			$application = ORM::for_table('application')->where('aId', $input->aId)->find_one();
+			if(!$application)
 				return parent::_response(Array('error' => 'Application not found'), 403);
+			if($application->status != "Abstimmung")
+				return parent::_response(Array('error' => 'Application is not open for voting'), 403);
 
 			ORM::for_table('vote')->where(Array('mId' => $input->mId, 'aId' => $input->aId))->delete_many();
 
