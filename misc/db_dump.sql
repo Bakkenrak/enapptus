@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 15, 2015 at 03:44 
+-- Generation Time: Apr 22, 2015 at 02:07 
 -- Server version: 5.6.21
 -- PHP Version: 5.6.3
 
@@ -38,13 +38,18 @@ CREATE TABLE IF NOT EXISTS `answer` (
 --
 
 INSERT INTO `answer` (`aId`, `fId`, `value`) VALUES
-(3, 62, 'jooooooooo'),
-(3, 63, 'neeeeeee'),
 (4, 63, 'jooooooooo'),
 (4, 64, 'neeeeeee'),
 (5, 64, 'FH'),
 (5, 69, '12'),
-(5, 71, 'ads');
+(5, 71, 'ads'),
+(7, 64, ''),
+(7, 62, 'neeeeeee'),
+(8, 62, 'Christian'),
+(8, 63, 'Rest'),
+(8, 64, 'WWU'),
+(8, 69, '12'),
+(8, 71, 'ja');
 
 -- --------------------------------------------------------
 
@@ -55,17 +60,20 @@ INSERT INTO `answer` (`aId`, `fId`, `value`) VALUES
 DROP TABLE IF EXISTS `application`;
 CREATE TABLE IF NOT EXISTS `application` (
 `aId` int(11) NOT NULL,
-  `time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+  `time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` enum('Abstimmung','Eingeladen','Abgelehnt') NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `application`
 --
 
-INSERT INTO `application` (`aId`, `time`) VALUES
-(3, '2015-03-27 12:53:52'),
-(4, '2015-03-27 14:05:31'),
-(5, '2015-04-03 23:22:36');
+INSERT INTO `application` (`aId`, `time`, `status`) VALUES
+(4, '2015-03-27 14:05:31', 'Eingeladen'),
+(5, '2015-04-03 23:22:36', 'Eingeladen'),
+(6, '2015-04-18 20:01:04', 'Abstimmung'),
+(7, '2015-04-18 20:01:57', 'Abgelehnt'),
+(8, '2015-04-22 13:41:09', 'Abstimmung');
 
 -- --------------------------------------------------------
 
@@ -79,14 +87,7 @@ CREATE TABLE IF NOT EXISTS `attempts` (
   `ip` varchar(39) NOT NULL,
   `count` int(11) NOT NULL,
   `expiredate` datetime NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `attempts`
---
-
-INSERT INTO `attempts` (`id`, `ip`, `count`, `expiredate`) VALUES
-(1, '::1', 2, '2015-04-15 15:49:08');
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -129,7 +130,7 @@ CREATE TABLE IF NOT EXISTS `member` (
   `password` varchar(255) NOT NULL,
   `salt` varchar(22) NOT NULL,
   `admin` tinyint(1) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `member`
@@ -174,14 +175,15 @@ CREATE TABLE IF NOT EXISTS `question` (
   `aId` int(11) NOT NULL,
   `value` text NOT NULL,
   `time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `question`
 --
 
 INSERT INTO `question` (`qId`, `mId`, `aId`, `value`, `time`) VALUES
-(2, 3, 3, 'wo denn jetzt', '2015-03-27 13:42:00');
+(4, 3, 7, 'halla?', '2015-04-21 14:56:15'),
+(6, 10, 4, 'Test?', '2015-04-22 13:25:34');
 
 -- --------------------------------------------------------
 
@@ -199,14 +201,14 @@ CREATE TABLE IF NOT EXISTS `sessions` (
   `agent` varchar(200) NOT NULL,
   `cookie_crc` varchar(40) NOT NULL,
   `remember` tinyint(1) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `sessions`
 --
 
 INSERT INTO `sessions` (`id`, `uid`, `hash`, `expiredate`, `ip`, `agent`, `cookie_crc`, `remember`) VALUES
-(21, 3, 'd7f14a22338e29672646d7f6bc5b51fbdc3381f4', '2015-04-15 16:11:55', '::1', 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.118 Safari/537.36', 'a2dd603c39645b09e0e8f9bd64fbd62e373463af', 0);
+(31, 10, '3c16a4b5c030e20c84375ea18970ec03587f224f', '2015-04-22 14:35:38', '::1', 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.90 Safari/537.36', 'f7d436f922743de3cfb1120d7c0a42974eb26a5a', 0);
 
 -- --------------------------------------------------------
 
@@ -226,8 +228,11 @@ CREATE TABLE IF NOT EXISTS `vote` (
 --
 
 INSERT INTO `vote` (`mid`, `aId`, `value`) VALUES
-(3, 4, 'pro'),
-(3, 3, 'pro');
+(10, 4, 'neutral'),
+(3, 7, 'pro'),
+(3, 4, 'neutral'),
+(3, 6, 'neutral'),
+(3, 8, 'con');
 
 --
 -- Indexes for dumped tables
@@ -295,12 +300,12 @@ ALTER TABLE `vote`
 -- AUTO_INCREMENT for table `application`
 --
 ALTER TABLE `application`
-MODIFY `aId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=6;
+MODIFY `aId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=9;
 --
 -- AUTO_INCREMENT for table `attempts`
 --
 ALTER TABLE `attempts`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `field`
 --
@@ -310,17 +315,17 @@ MODIFY `fId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=72;
 -- AUTO_INCREMENT for table `member`
 --
 ALTER TABLE `member`
-MODIFY `mId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=13;
+MODIFY `mId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=11;
 --
 -- AUTO_INCREMENT for table `question`
 --
 ALTER TABLE `question`
-MODIFY `qId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
+MODIFY `qId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=7;
 --
 -- AUTO_INCREMENT for table `sessions`
 --
 ALTER TABLE `sessions`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=22;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=32;
 --
 -- Constraints for dumped tables
 --
