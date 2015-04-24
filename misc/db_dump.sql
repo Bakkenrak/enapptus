@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 22, 2015 at 02:07 
+-- Generation Time: Apr 24, 2015 at 02:37 
 -- Server version: 5.6.21
 -- PHP Version: 5.6.3
 
@@ -38,8 +38,6 @@ CREATE TABLE IF NOT EXISTS `answer` (
 --
 
 INSERT INTO `answer` (`aId`, `fId`, `value`) VALUES
-(4, 63, 'jooooooooo'),
-(4, 64, 'neeeeeee'),
 (5, 64, 'FH'),
 (5, 69, '12'),
 (5, 71, 'ads'),
@@ -69,7 +67,6 @@ CREATE TABLE IF NOT EXISTS `application` (
 --
 
 INSERT INTO `application` (`aId`, `time`, `status`) VALUES
-(4, '2015-03-27 14:05:31', 'Eingeladen'),
 (5, '2015-04-03 23:22:36', 'Eingeladen'),
 (6, '2015-04-18 20:01:04', 'Abstimmung'),
 (7, '2015-04-18 20:01:57', 'Abgelehnt'),
@@ -88,6 +85,26 @@ CREATE TABLE IF NOT EXISTS `attempts` (
   `count` int(11) NOT NULL,
   `expiredate` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `availability`
+--
+
+DROP TABLE IF EXISTS `availability`;
+CREATE TABLE IF NOT EXISTS `availability` (
+`id` int(11) NOT NULL,
+  `from` datetime NOT NULL,
+  `to` datetime NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='The timespan in which the Application form should be available.';
+
+--
+-- Dumping data for table `availability`
+--
+
+INSERT INTO `availability` (`id`, `from`, `to`) VALUES
+(1, '2015-04-20 14:34:17', '2015-04-26 23:22:36');
 
 -- --------------------------------------------------------
 
@@ -175,7 +192,7 @@ CREATE TABLE IF NOT EXISTS `question` (
   `aId` int(11) NOT NULL,
   `value` text NOT NULL,
   `time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `question`
@@ -183,7 +200,7 @@ CREATE TABLE IF NOT EXISTS `question` (
 
 INSERT INTO `question` (`qId`, `mId`, `aId`, `value`, `time`) VALUES
 (4, 3, 7, 'halla?', '2015-04-21 14:56:15'),
-(6, 10, 4, 'Test?', '2015-04-22 13:25:34');
+(7, 3, 5, 'Magst du Wurst?', '2015-04-22 15:55:57');
 
 -- --------------------------------------------------------
 
@@ -201,14 +218,15 @@ CREATE TABLE IF NOT EXISTS `sessions` (
   `agent` varchar(200) NOT NULL,
   `cookie_crc` varchar(40) NOT NULL,
   `remember` tinyint(1) NOT NULL
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `sessions`
 --
 
 INSERT INTO `sessions` (`id`, `uid`, `hash`, `expiredate`, `ip`, `agent`, `cookie_crc`, `remember`) VALUES
-(31, 10, '3c16a4b5c030e20c84375ea18970ec03587f224f', '2015-04-22 14:35:38', '::1', 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.90 Safari/537.36', 'f7d436f922743de3cfb1120d7c0a42974eb26a5a', 0);
+(31, 10, '3c16a4b5c030e20c84375ea18970ec03587f224f', '2015-04-22 14:35:38', '::1', 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.90 Safari/537.36', 'f7d436f922743de3cfb1120d7c0a42974eb26a5a', 0),
+(32, 3, '9c20929ca4c0e167f20bf9d36611f8d6c7b724e1', '2015-04-23 22:16:02', '::1', 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.90 Safari/537.36', 'a1f9ec167889c1ba152b6b762207d27921e277ba', 0);
 
 -- --------------------------------------------------------
 
@@ -228,11 +246,9 @@ CREATE TABLE IF NOT EXISTS `vote` (
 --
 
 INSERT INTO `vote` (`mid`, `aId`, `value`) VALUES
-(10, 4, 'neutral'),
 (3, 7, 'pro'),
-(3, 4, 'neutral'),
-(3, 6, 'neutral'),
-(3, 8, 'con');
+(3, 8, 'con'),
+(3, 6, 'con');
 
 --
 -- Indexes for dumped tables
@@ -254,6 +270,12 @@ ALTER TABLE `application`
 -- Indexes for table `attempts`
 --
 ALTER TABLE `attempts`
+ ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `availability`
+--
+ALTER TABLE `availability`
  ADD PRIMARY KEY (`id`);
 
 --
@@ -307,6 +329,11 @@ MODIFY `aId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=9;
 ALTER TABLE `attempts`
 MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
+-- AUTO_INCREMENT for table `availability`
+--
+ALTER TABLE `availability`
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
+--
 -- AUTO_INCREMENT for table `field`
 --
 ALTER TABLE `field`
@@ -320,12 +347,12 @@ MODIFY `mId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=11;
 -- AUTO_INCREMENT for table `question`
 --
 ALTER TABLE `question`
-MODIFY `qId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=7;
+MODIFY `qId` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=8;
 --
 -- AUTO_INCREMENT for table `sessions`
 --
 ALTER TABLE `sessions`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=32;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=33;
 --
 -- Constraints for dumped tables
 --

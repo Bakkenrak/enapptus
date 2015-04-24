@@ -173,6 +173,22 @@
 
 				}
 
+			} elseif($this->verb == 'availability') { //call to api/application/save
+
+				if($this->method == 'GET') {
+
+					return $this->getApplicationAvailability();
+
+				} elseif($this->method == 'POST') {
+
+					return $this->saveApplicationAvailability();
+
+				} else {
+
+					return parent::_response(Array('error' => "Only accepts GET or POST requests"), 403);
+
+				}
+
 			} elseif(isset($this->args[0]) && is_numeric($this->args[0])) { // call to api/application/{id}
 
 				$mId = $this->auth->authenticate(); //check if caller is authorized to use this method
@@ -583,6 +599,9 @@
 		}
 
 		private function saveApplication(){
+			if(!$this->checkApplicationAvailability())
+				return parent::_response(Array('error' => 'The application form is not yet or no longer available.'), 403);
+
 			$input = json_decode($this->file); //decode input json
 
 			if(!isset($input->aId))
@@ -644,6 +663,52 @@
 			$application->save();
 
 			return parent::_response($application->as_array());
+		}
+
+		private function getApplicationAvailability() {
+			$availability = ORM::for_table('availability')->select_many('from', 'to')->find_one();
+
+			$availability->availableNow = $this->checkApplicationAvailability($availability);
+
+			return parent::_response($availability->as_array());
+		}
+
+		private function saveApplicationAvailability() {
+			$input = json_decode($this->file); //decode input json
+
+			if(!isset($input->from))
+				return parent::_response(Array('error' => "Attribute from is missing"), 400);
+			if(!isset($input->to))
+				return parent::_response(Array('error' => "Attribute to is missing"), 400);
+
+			$availability = ORM::for_table('availability')->find_one();
+
+			if(!$availability)
+				$availability = ORM::for_table('availability')->create(); //create new
+
+			$availability->from = $input->from;
+			$availability->to = $input->to;
+			$availability->save();
+
+			$now = time();
+
+			unset($availability->id); //don't want it in our output
+
+			$availability->availableNow = $this->checkApplicationAvailability($availability);
+
+			return parent::_response($availability->as_array());
+		}
+
+		private function checkApplicationAvailability($availability = false) {
+			if(!$availability)
+				$availability = ORM::for_table('availability')->select_many('from', 'to')->find_one();
+
+			$now = time();
+
+			if((strtotime($availability->from) - $now <= 0) && (strtotime($availability->to) - $now >= 0))
+				return true;
+
+			return false;
 		}
 
 	// Votes --------------------------------------------------------
